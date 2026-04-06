@@ -28,56 +28,55 @@ export default function ApplyLeave() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Apply for Leave</h2>
-        <form onSubmit={handleSubmit}>
-          <label style={styles.label}>Leave Type</label>
-          <select style={styles.input} value={form.leaveType} onChange={e => setForm({ ...form, leaveType: e.target.value })}>
-            <option value="casual">Casual Leave</option>
-            <option value="sick">Sick Leave</option>
-            <option value="annual">Annual Leave</option>
-          </select>
+    <div className="page" style={{ maxWidth: '600px' }}>
+      <div className="page-header">
+        <h1 className="page-title">Apply for Leave</h1>
+        <p className="page-sub">Fill in the details below to submit your request</p>
+      </div>
 
-          <div style={styles.row}>
-            <div style={{ flex: 1 }}>
-              <label style={styles.label}>Start Date</label>
-              <input style={styles.input} type="date" value={form.startDate}
-                onChange={e => setForm({ ...form, startDate: e.target.value })} required />
+      <div className="card">
+        <div className="card-body">
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label">Leave type</label>
+              <select className="form-select" value={form.leaveType} onChange={e => setForm({ ...form, leaveType: e.target.value })}>
+                <option value="casual">Casual Leave</option>
+                <option value="sick">Sick Leave</option>
+                <option value="annual">Annual Leave</option>
+              </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={styles.label}>End Date</label>
-              <input style={styles.input} type="date" value={form.endDate}
-                onChange={e => setForm({ ...form, endDate: e.target.value })} required />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Start date</label>
+                <input className="form-input" type="date" value={form.startDate}
+                  onChange={e => setForm({ ...form, startDate: e.target.value })} required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">End date</label>
+                <input className="form-input" type="date" value={form.endDate}
+                  onChange={e => setForm({ ...form, endDate: e.target.value })} required />
+              </div>
             </div>
-          </div>
 
-          {days > 0 && (
-            <div style={styles.daysBadge}>📅 {days} day{days > 1 ? 's' : ''} of leave</div>
-          )}
+            {days > 0 && (
+              <div className="days-banner">
+                📅 {days} day{days > 1 ? 's' : ''} of {form.leaveType} leave
+              </div>
+            )}
 
-          <label style={styles.label}>Reason</label>
-          <textarea style={{ ...styles.input, height: '100px', resize: 'vertical' }}
-            placeholder="Briefly describe the reason..."
-            value={form.reason}
-            onChange={e => setForm({ ...form, reason: e.target.value })} required />
+            <div className="form-group">
+              <label className="form-label">Reason</label>
+              <textarea className="form-textarea" placeholder="Briefly describe the reason for your leave..."
+                value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} required />
+            </div>
 
-          <button style={styles.btn} type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit Application'}
-          </button>
-        </form>
+            <button className="btn btn-primary btn-full btn-lg" type="submit" disabled={loading}>
+              {loading ? 'Submitting...' : 'Submit Application'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: { maxWidth: '560px', margin: '40px auto', padding: '0 20px' },
-  card: { background: '#fff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' },
-  title: { color: '#1e40af', marginBottom: '24px' },
-  label: { display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '4px' },
-  input: { width: '100%', padding: '10px 14px', marginBottom: '16px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box' },
-  row: { display: 'flex', gap: '16px' },
-  daysBadge: { background: '#eff6ff', color: '#1e40af', padding: '8px 16px', borderRadius: '8px', marginBottom: '16px', fontWeight: '600', fontSize: '14px' },
-  btn: { width: '100%', padding: '12px', background: '#1e40af', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', cursor: 'pointer' }
-};

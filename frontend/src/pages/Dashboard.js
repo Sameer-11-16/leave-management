@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../api';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
-  const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0 });
+  const [stats, setStats] = useState({ pending: 0, approved: 0, rejected: 0, total: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data: profileData } = await API.get('/users/me');
         setProfile(profileData);
-
         const { data: leaves } = await API.get(user.role === 'admin' ? '/leaves/all' : '/leaves/my');
-        const pending = leaves.filter(l => l.status === 'pending').length;
-        const approved = leaves.filter(l => l.status === 'approved').length;
-        const rejected = leaves.filter(l => l.status === 'rejected').length;
-        setStats({ pending, approved, rejected });
+        setStats({
+          pending: leaves.filter(l => l.status === 'pending').length,
+          approved: leaves.filter(l => l.status === 'approved').length,
+          rejected: leaves.filter(l => l.status === 'rejected').length,
+          total: leaves.length,
+        });
       } catch (err) {}
     };
     fetchData();
@@ -26,23 +28,30 @@ export default function Dashboard() {
   const balance = profile?.leaveBalance;
 
   return (
-    <div style={styles.page}>
-      <h2 style={styles.heading}>Welcome, {user?.name} 👋</h2>
-      <p style={styles.sub}>{user?.department} • {user?.role === 'admin' ? '🔑 Admin' : '👤 Employee'}</p>
+    <div className="page">
+      <div className="page-header">
+        <h1 className="page-title">Good morning, {user?.name?.split(' ')[0]} 👋</h1>
+        <p className="page-sub">{user?.department} · {user?.role === 'admin' ? 'Administrator' : 'Employee'}</p>
+      </div>
 
-      <div style={styles.grid}>
-        <StatCard label="Pending" value={stats.pending} color="#f59e0b" />
-        <StatCard label="Approved" value={stats.approved} color="#10b981" />
-        <StatCard label="Rejected" value={stats.rejected} color="#ef4444" />
+      <div className="stats-grid">
+        <StatCard label="Pending" value={stats.pending} color="#d97706" bg="#fef3c7" />
+        <StatCard label="Approved" value={stats.approved} color="#16a34a" bg="#dcfce7" />
+        <StatCard label="Rejected" value={stats.rejected} color="#dc2626" bg="#fee2e2" />
       </div>
 
       {user?.role === 'employee' && balance && (
         <>
-          <h3 style={styles.sectionTitle}>Leave Balance</h3>
-          <div style={styles.grid}>
-            <BalanceCard label="Casual Leave" value={balance.casual} total={10} color="#6366f1" />
-            <BalanceCard label="Sick Leave" value={balance.sick} total={7} color="#ec4899" />
-            <BalanceCard label="Annual Leave" value={balance.annual} total={15} color="#0891b2" />
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', marginBottom: '16px', color: '#1e293b' }}>
+            Leave Balance
+          </h2>
+          <div className="stats-grid">
+            <BalanceCard label="Casual Leave" value={balance.casual} total={10} color="#7c3aed" bg="#ede9fe" />
+            <BalanceCard label="Sick Leave" value={balance.sick} total={7} color="#be185d" bg="#fce7f3" />
+            <BalanceCard label="Annual Leave" value={balance.annual} total={15} color="#0369a1" bg="#e0f2fe" />
+          </div>
+          <div style={{ marginTop: '8px' }}>
+            <Link to="/apply" className="btn btn-primary btn-lg">Apply for Leave</Link>
           </div>
         </>
       )}
@@ -50,34 +59,27 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, color }) {
+function StatCard({ label, value, color, bg }) {
   return (
-    <div style={{ ...styles.card, borderTop: `4px solid ${color}` }}>
-      <div style={{ fontSize: '32px', fontWeight: 'bold', color }}>{value}</div>
-      <div style={{ color: '#6b7280', marginTop: '4px' }}>{label} Leaves</div>
+    <div className="stat-card" style={{ borderTop: `3px solid ${color}` }}>
+      <div className="stat-value" style={{ color }}>{value}</div>
+      <div className="stat-label">{label} Leaves</div>
     </div>
   );
 }
 
-function BalanceCard({ label, value, total, color }) {
+function BalanceCard({ label, value, total, color, bg }) {
   const pct = Math.round((value / total) * 100);
   return (
-    <div style={styles.card}>
-      <div style={{ fontWeight: '600', marginBottom: '8px' }}>{label}</div>
-      <div style={{ fontSize: '28px', fontWeight: 'bold', color }}>{value} <span style={{ fontSize: '14px', color: '#9ca3af' }}>/ {total}</span></div>
-      <div style={styles.barBg}><div style={{ ...styles.bar, width: `${pct}%`, background: color }} /></div>
-      <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>{pct}% remaining</div>
+    <div className="stat-card">
+      <div style={{ fontSize: '13px', fontWeight: '500', color: '#64748b', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '28px', fontWeight: '600', color }}>
+        {value} <span style={{ fontSize: '14px', color: '#94a3b8', fontWeight: '400' }}>/ {total} days</span>
+      </div>
+      <div className="stat-bar">
+        <div className="stat-fill" style={{ width: `${pct}%`, background: color }} />
+      </div>
+      <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>{pct}% remaining</div>
     </div>
   );
 }
-
-const styles = {
-  page: { maxWidth: '900px', margin: '30px auto', padding: '0 20px' },
-  heading: { fontSize: '24px', fontWeight: 'bold', color: '#1e40af' },
-  sub: { color: '#6b7280', marginBottom: '24px' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' },
-  card: { background: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
-  sectionTitle: { fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#374151' },
-  barBg: { background: '#e5e7eb', borderRadius: '99px', height: '6px', marginTop: '8px' },
-  bar: { height: '6px', borderRadius: '99px', transition: 'width 0.5s' }
-};
