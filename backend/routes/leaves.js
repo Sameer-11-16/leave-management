@@ -21,20 +21,21 @@ router.post('/', auth, async (req, res) => {
       }
     }
 
-    const leave = new Leave({ employee: req.user.id, leaveType, startDate, endDate, days, reason, document: document || '' });
-    await leave.save();
-
-    const admins = await User.find({ role: 'admin' });
-    admins.forEach(admin => {
-      sendEmail({
-        to: admin.email,
-        subject: `New Leave Request from ${user.name}`,
-        html: leaveAppliedAdmin({ employeeName: user.name, leaveType, startDate, endDate, days, reason })
-      });
+    const leave = new Leave({
+      employee: req.user.id,
+      leaveType,
+      startDate,
+      endDate,
+      days,
+      reason,
+      document: document || ''
     });
+
+    await leave.save();
 
     res.status(201).json(leave);
   } catch (err) {
+    console.error(err); // helpful for debugging
     res.status(500).json({ msg: 'Server error' });
   }
 });
@@ -52,8 +53,13 @@ router.get('/my', auth, async (req, res) => {
 // Get all leaves (admin)
 router.get('/all', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
-    const leaves = await Leave.find().populate('employee', 'name email department').sort({ createdAt: -1 });
+    if (req.user.role !== 'admin')
+      return res.status(403).json({ msg: 'Access denied' });
+
+    const leaves = await Leave.find()
+      .populate('employee', 'name email department')
+      .sort({ createdAt: -1 });
+
     res.json(leaves);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -63,10 +69,14 @@ router.get('/all', auth, async (req, res) => {
 // Approve/Reject leave (admin)
 router.put('/:id', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
+    if (req.user.role !== 'admin')
+      return res.status(403).json({ msg: 'Access denied' });
+
     const { status, adminComment } = req.body;
+
     const leave = await Leave.findById(req.params.id);
-    if (!leave) return res.status(404).json({ msg: 'Leave not found' });
+    if (!leave)
+      return res.status(404).json({ msg: 'Leave not found' });
 
     // Only deduct balance for non-special leaves
     if (leave.leaveType !== 'special') {
@@ -75,6 +85,7 @@ router.put('/:id', auth, async (req, res) => {
           $inc: { [`leaveBalance.${leave.leaveType}`]: -leave.days }
         });
       }
+
       if (status === 'rejected' && leave.status === 'approved') {
         await User.findByIdAndUpdate(leave.employee, {
           $inc: { [`leaveBalance.${leave.leaveType}`]: leave.days }
@@ -86,24 +97,9 @@ router.put('/:id', auth, async (req, res) => {
     leave.adminComment = adminComment || '';
     await leave.save();
 
-    const employee = await User.findById(leave.employee);
-    if (employee) {
-      sendEmail({
-        to: employee.email,
-        subject: `Your leave request has been ${status}`,
-        html: leaveStatusEmployee({
-          employeeName: employee.name,
-          leaveType: leave.leaveType,
-          status, adminComment,
-          startDate: leave.startDate,
-          endDate: leave.endDate,
-          days: leave.days
-        })
-      });
-    }
-
     res.json(leave);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
@@ -112,10 +108,18 @@ router.put('/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const leave = await Leave.findById(req.params.id);
-    if (!leave) return res.status(404).json({ msg: 'Leave not found' });
-    if (leave.employee.toString() !== req.user.id) return res.status(403).json({ msg: 'Not authorized' });
-    if (leave.status !== 'pending') return res.status(400).json({ msg: 'Can only delete pending leaves' });
+
+    if (!leave)
+      return res.status(404).json({ msg: 'Leave not found' });
+
+    if (leave.employee.toString() !== req.user.id)
+      return res.status(403).json({ msg: 'Not authorized' });
+
+    if (leave.status !== 'pending')
+      return res.status(400).json({ msg: 'Can only delete pending leaves' });
+
     await leave.deleteOne();
+
     res.json({ msg: 'Leave deleted' });
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
