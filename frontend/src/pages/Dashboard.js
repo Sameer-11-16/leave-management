@@ -9,6 +9,23 @@ export default function Dashboard() {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // --- Badge logic added here ---
+  const isAdmin = user?.role === 'admin';
+  const badgeStyle = {
+    padding: '4px 12px',
+    borderRadius: '99px',
+    fontSize: '11px',
+    fontWeight: '700',
+    display: 'inline-flex',
+    alignItems: 'center',
+    marginLeft: '12px',
+    backgroundColor: isAdmin ? '#e0e7ff' : '#dcfce7', 
+    color: isAdmin ? '#4338ca' : '#15803d',
+    border: `1px solid ${isAdmin ? '#c7d2fe' : '#bbf7d0'}`,
+    textTransform: 'uppercase',
+    verticalAlign: 'middle'
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,8 +80,14 @@ export default function Dashboard() {
       {/* ── Header ── */}
       <div style={S.header}>
         <div>
-          <h1 style={S.title}>{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
-          <p style={S.subtitle}>{user?.department} · {user?.role === 'admin' ? 'Administrator' : 'Employee'}</p>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 style={S.title}>{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
+            {/* Badge added here */}
+            <span style={badgeStyle}>
+              {isAdmin ? '🛡️ Admin' : '👤 Employee'}
+            </span>
+          </div>
+          <h1 style={S.subtitle}>{user?.department} · {user?.role === 'admin' ? 'Administrator' : 'Employee'}</h1>
         </div>
         {user?.role === 'employee' && (
           <Link to="/apply" style={S.applyBtn}>+ Apply Leave</Link>
@@ -83,8 +106,8 @@ export default function Dashboard() {
         <div style={S.section}>
           <p style={S.sectionTitle}>Leave Balance</p>
           <div style={S.grid3}>
-            <BalanceCard label="Casual" value={balance.casual} total={10} color="#7c3aed" />
-            <BalanceCard label="Sick" value={balance.sick} total={7} color="#db2777" />
+            <BalanceCard label="Casual" value={balance.casual} total={14} color="#7c3aed" />
+            <BalanceCard label="Sick" value={balance.sick} total={10} color="#db2777" />
             <BalanceCard label="Annual" value={balance.annual} total={15} color="#0284c7" />
           </div>
         </div>
@@ -346,14 +369,14 @@ const S = {
   loadingPage: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' },
   spinner: { width: '36px', height: '36px', border: '3px solid #e2e8f0', borderTop: '3px solid #2563eb', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '28px' },
-  title: { fontFamily: "'DM Serif Display', serif", fontSize: '28px', color: '#0f172a', margin: 0 },
+  title: { fontSize: '28px', color: '#0f172a', margin: 0 },
   subtitle: { color: '#64748b', fontSize: '14px', marginTop: '4px' },
   applyBtn: { display: 'inline-flex', alignItems: 'center', padding: '10px 20px', background: '#2563eb', color: '#fff', borderRadius: '10px', textDecoration: 'none', fontSize: '14px', fontWeight: '600', whiteSpace: 'nowrap' },
   grid3: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' },
   card: { background: '#fff', borderRadius: '14px', padding: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
   section: { marginBottom: '28px' },
   sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' },
-  sectionTitle: { fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: '#0f172a', margin: 0 },
+  sectionTitle: { fontSize: '20px', color: '#0f172a', margin: 0 },
   viewAll: { fontSize: '13px', color: '#2563eb', textDecoration: 'none' },
   chartsRow: { display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '16px', marginBottom: '28px' },
   chartCard: { background: '#fff', borderRadius: '14px', padding: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', minWidth: 0 },

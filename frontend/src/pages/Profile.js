@@ -174,8 +174,8 @@ export default function Profile() {
             <span style={S.cardTitle}>Leave Balance</span>
           </div>
           <div style={S.cardBody}>
-            <BalanceRow label="Casual Leave" used={10 - balance.casual} total={10} color="#7c3aed" icon="🏖️" />
-            <BalanceRow label="Sick Leave" used={7 - balance.sick} total={7} color="#db2777" icon="🤒" />
+            <BalanceRow label="Casual Leave" used={10 - balance.casual} total={14} color="#7c3aed" icon="🏖️" />
+            <BalanceRow label="Sick Leave" used={7 - balance.sick} total={10} color="#db2777" icon="🤒" />
             <BalanceRow label="Annual Leave" used={15 - balance.annual} total={15} color="#0284c7" icon="✈️" />
           </div>
         </div>

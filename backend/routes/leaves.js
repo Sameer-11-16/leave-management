@@ -3,8 +3,6 @@ const router = express.Router();
 const Leave = require('../models/Leave');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
-const sendEmail = require('../utils/sendEmail');
-const { leaveAppliedAdmin, leaveStatusEmployee } = require('../utils/emailTemplates');
 
 // Apply for leave (employee)
 router.post('/', auth, async (req, res) => {
