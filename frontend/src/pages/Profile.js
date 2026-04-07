@@ -193,7 +193,7 @@ export default function Profile() {
           </div>
           <div className="card-body">
             {[
-              { key: 'casual', label: 'Casual Leave', total: 10, icon: '🏖️', color: '#7c3aed' },
+              { key: 'casual', label: 'Casual Leave', total: 14, icon: '🏖️', color: '#7c3aed' },
               { key: 'medical', label: 'Medical Leave', total: 10, icon: '💊', color: '#db2777' },
               { key: 'special', label: 'Special Leave', total: null, icon: '⭐', color: '#0284c7', unlimited: true },
             ].map((item, i) => {
