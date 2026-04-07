@@ -13,6 +13,24 @@ export default function Dashboard() {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // --- MANUAL BADGE LOGIC START ---
+  const isAdmin = user?.role === 'admin';
+  const badgeStyle = {
+    padding: '4px 12px',
+    borderRadius: '99px',
+    fontSize: '11px',
+    fontWeight: '700',
+    display: 'inline-flex',
+    alignItems: 'center',
+    marginLeft: '12px',
+    backgroundColor: isAdmin ? '#e0e7ff' : '#dcfce7', 
+    color: isAdmin ? '#4338ca' : '#15803d',
+    border: `1px solid ${isAdmin ? '#c7d2fe' : '#bbf7d0'}`,
+    textTransform: 'uppercase',
+    verticalAlign: 'middle'
+  };
+  // --- MANUAL BADGE LOGIC END ---
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,15 +73,26 @@ export default function Dashboard() {
   return (
     <div className="page">
 
-      {/* Header */}
+      {/* Header with Badge */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '28px' }} className="anim-fadeInUp">
         <div>
           <p style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '4px', fontWeight: '500' }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
-          <h1 className="page-title">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
-          <p className="page-sub">{user?.department} · {user?.role === 'admin' ? 'Administrator' : 'Employee'}</p>
+          
+          {/* Badge added here */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <h1 className="page-title">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
+            <span style={badgeStyle}>
+              {isAdmin ? '🛡️ Admin' : '👤 Employee'}
+            </span>
+          </div>
+
+          <p className="page-sub">
+            {user?.department} · {isAdmin ? 'Management Portal' : 'Staff Portal'}
+          </p>
         </div>
+        
         {user?.role === 'employee' && (
           <Link to="/apply" className="btn btn-primary btn-lg">+ Apply Leave</Link>
         )}
@@ -108,7 +137,7 @@ export default function Dashboard() {
       {leaves.length > 0 && (
         <div style={{ marginBottom: '28px' }} className="anim-fadeInUp delay-4">
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)', marginBottom: '16px' }}>
-            Leave Breakdown
+            {isAdmin ? 'Staff Leave Breakdown' : 'Leave Breakdown'}
           </h2>
           <div className="card">
             <div className="card-body">
@@ -122,7 +151,9 @@ export default function Dashboard() {
       {recentLeaves.length > 0 && (
         <div className="anim-fadeInUp delay-5">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)' }}>Recent Requests</h2>
+            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)' }}>
+              {isAdmin ? 'Recent Staff Requests' : 'Recent My Requests'}
+            </h2>
             <Link to={user?.role === 'admin' ? '/admin' : '/my-leaves'} style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '500' }}>View all →</Link>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -136,7 +167,7 @@ export default function Dashboard() {
                     <div>
                       <div style={{ fontWeight: '600', color: 'var(--text)', fontSize: '14px' }}>
                         {LEAVE_LABELS[leave.leaveType] || leave.leaveType} Leave
-                        {user?.role === 'admin' && leave.employee?.name && (
+                        {isAdmin && leave.employee?.name && (
                           <span style={{ color: 'var(--text3)', fontWeight: '400', marginLeft: '6px' }}>· {leave.employee.name}</span>
                         )}
                       </div>
@@ -164,6 +195,8 @@ export default function Dashboard() {
     </div>
   );
 }
+
+// ... BalanceCard and BreakdownBar functions remain exactly same ...
 
 function BalanceCard({ label, value, total, color, icon, delay, unlimited }) {
   const pct = unlimited ? 100 : (total > 0 ? Math.round((value / total) * 100) : 0);
