@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ 
-  baseURL: 'https://leave-management-8xqz.onrender.com/api' 
-});
+const API = axios.create({ baseURL: 'https://leave-management-8xqz.onrender.com/api' });
 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import ApplyLeave from './pages/ApplyLeave';
 import MyLeaves from './pages/MyLeaves';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
 const PrivateRoute = ({ children }) => {
@@ -30,6 +31,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/apply" element={<PrivateRoute><ApplyLeave /></PrivateRoute>} />
         <Route path="/my-leaves" element={<PrivateRoute><MyLeaves /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AdminRoute><AdminPanel /></AdminRoute></PrivateRoute>} />
         <Route path="*" element={<Navigate to={token ? "/dashboard" : "/login"} />} />
       </Routes>

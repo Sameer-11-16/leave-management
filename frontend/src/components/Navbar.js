@@ -19,9 +19,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <Link to="/dashboard" className="navbar-brand">
-          📅 LeaveMS
-        </Link>
+        <Link to="/dashboard" className="navbar-brand">📅 LeaveMS</Link>
+
         <div className="navbar-links">
           {links.map(l => (
             <Link key={l.to} to={l.to} className={`nav-link ${isActive(l.to) ? 'active' : ''}`}>
@@ -29,19 +28,35 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
+
         <div className="navbar-right">
-          <div className="nav-avatar">{user?.name?.charAt(0).toUpperCase()}</div>
-          <span className="nav-username">{user?.name}</span>
-          <button onClick={handleLogout} className="btn btn-danger" style={{padding:'6px 14px',fontSize:'13px'}}>Logout</button>
+          <Link to="/profile" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="nav-avatar" style={{ cursor: 'pointer' }} title="My Profile">
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <span className="nav-username">{user?.name}</span>
+          </Link>
+          <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '6px 14px', fontSize: '13px' }}>
+            Logout
+          </button>
           <button className="hamburger-btn" onClick={() => setOpen(!open)}>☰</button>
         </div>
       </div>
+
       {open && (
         <div className="mobile-menu">
           {links.map(l => (
-            <Link key={l.to} to={l.to} className="mobile-nav-link" onClick={() => setOpen(false)}>{l.label}</Link>
+            <Link key={l.to} to={l.to} className="mobile-nav-link" onClick={() => setOpen(false)}>
+              {l.label}
+            </Link>
           ))}
-          <button onClick={() => { handleLogout(); setOpen(false); }} className="btn btn-danger btn-full" style={{marginTop:'8px'}}>Logout</button>
+          <Link to="/profile" className="mobile-nav-link" onClick={() => setOpen(false)}>
+            👤 My Profile
+          </Link>
+          <button onClick={() => { handleLogout(); setOpen(false); }}
+            className="btn btn-danger btn-full" style={{ marginTop: '8px' }}>
+            Logout
+          </button>
         </div>
       )}
     </nav>
