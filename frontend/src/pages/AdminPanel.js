@@ -138,7 +138,7 @@ export default function AdminPanel() {
                   </div>
                 </div>
                 <div className="balance-row">
-                  {Object.entries(emp.leaveBalance).map(([type, val]) => (
+                  {Object.entries(emp.leaveBalance).filter(([type]) => ['casual','medical','special'].includes(type)).map(([type, val]) => (
                     <span key={type} className={`balance-chip badge badge-${type}`}>
                       <strong>{val}</strong> {type}
                     </span>

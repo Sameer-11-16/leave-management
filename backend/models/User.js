@@ -8,8 +8,8 @@ const UserSchema = new mongoose.Schema({
   department: { type: String, default: 'General' },
   leaveBalance: {
     casual: { type: Number, default: 10 },
-    sick: { type: Number, default: 7 },
-    annual: { type: Number, default: 15 }
+    medical: { type: Number, default: 10 },
+    special: { type: Number, default: 999 }
   }
 }, { timestamps: true });
 

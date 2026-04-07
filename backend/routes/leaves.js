@@ -4,24 +4,26 @@ const Leave = require('../models/Leave');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-// Apply for leave (employee)
+// Apply for leave
 router.post('/', auth, async (req, res) => {
   try {
-    const { leaveType, startDate, endDate, reason } = req.body;
-
+    const { leaveType, startDate, endDate, reason, document } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
     const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
     const user = await User.findById(req.user.id);
-    if (user.leaveBalance[leaveType] < days) {
-      return res.status(400).json({ msg: `Insufficient ${leaveType} leave balance` });
+
+    // Special leave has no balance limit
+    if (leaveType !== 'special') {
+      if (!user.leaveBalance[leaveType] || user.leaveBalance[leaveType] < days) {
+        return res.status(400).json({ msg: `Insufficient ${leaveType} leave balance` });
+      }
     }
 
-    const leave = new Leave({ employee: req.user.id, leaveType, startDate, endDate, days, reason });
+    const leave = new Leave({ employee: req.user.id, leaveType, startDate, endDate, days, reason, document: document || '' });
     await leave.save();
 
-    // Notify all admins
     const admins = await User.find({ role: 'admin' });
     admins.forEach(admin => {
       sendEmail({
@@ -37,7 +39,7 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get my leaves (employee)
+// Get my leaves
 router.get('/my', auth, async (req, res) => {
   try {
     const leaves = await Leave.find({ employee: req.user.id }).sort({ createdAt: -1 });
@@ -62,27 +64,28 @@ router.get('/all', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
-
     const { status, adminComment } = req.body;
     const leave = await Leave.findById(req.params.id);
     if (!leave) return res.status(404).json({ msg: 'Leave not found' });
 
-    if (status === 'approved' && leave.status !== 'approved') {
-      await User.findByIdAndUpdate(leave.employee, {
-        $inc: { [`leaveBalance.${leave.leaveType}`]: -leave.days }
-      });
-    }
-    if (status === 'rejected' && leave.status === 'approved') {
-      await User.findByIdAndUpdate(leave.employee, {
-        $inc: { [`leaveBalance.${leave.leaveType}`]: leave.days }
-      });
+    // Only deduct balance for non-special leaves
+    if (leave.leaveType !== 'special') {
+      if (status === 'approved' && leave.status !== 'approved') {
+        await User.findByIdAndUpdate(leave.employee, {
+          $inc: { [`leaveBalance.${leave.leaveType}`]: -leave.days }
+        });
+      }
+      if (status === 'rejected' && leave.status === 'approved') {
+        await User.findByIdAndUpdate(leave.employee, {
+          $inc: { [`leaveBalance.${leave.leaveType}`]: leave.days }
+        });
+      }
     }
 
     leave.status = status;
     leave.adminComment = adminComment || '';
     await leave.save();
 
-    // Notify employee
     const employee = await User.findById(leave.employee);
     if (employee) {
       sendEmail({
@@ -91,8 +94,7 @@ router.put('/:id', auth, async (req, res) => {
         html: leaveStatusEmployee({
           employeeName: employee.name,
           leaveType: leave.leaveType,
-          status,
-          adminComment,
+          status, adminComment,
           startDate: leave.startDate,
           endDate: leave.endDate,
           days: leave.days
@@ -106,7 +108,7 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Delete leave (employee, only pending)
+// Delete leave (employee, pending only)
 router.delete('/:id', auth, async (req, res) => {
   try {
     const leave = await Leave.findById(req.params.id);
