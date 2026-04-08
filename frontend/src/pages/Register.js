@@ -72,7 +72,30 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card animate-fadeInUp">
+      <style>
+        {`
+          .register-form-grid {
+            display: grid;
+            gap: 12px 16px;
+            grid-template-columns: 1fr;
+          }
+          
+          .full-width-span {
+            grid-column: 1 / -1;
+          }
+
+          @media (min-width: 640px) {
+            .register-form-grid {
+              grid-template-columns: 1fr 1fr;
+            }
+            .auth-card.register-card-wide {
+              max-width: 600px; /* Make it wider for desktop to accommodate the dual columns */
+              width: 100%;
+            }
+          }
+        `}
+      </style>
+      <div className="auth-card register-card-wide animate-fadeInUp">
         <div className="auth-header">
           <div className="auth-logo" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: 'var(--primary-light)', color: 'var(--primary)', marginBottom: '20px' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,7 +108,8 @@ export default function Register() {
           <h1 className="auth-title">Create account</h1>
           <p className="auth-sub">Join your team on LeaveMS</p>
         </div>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+        <form onSubmit={handleSubmit} className="register-form-grid">
           
           <div className="form-group" style={{ marginBottom: '0px' }}>
             <label className="form-label" htmlFor="reg-name">Full name</label>
@@ -107,30 +131,29 @@ export default function Register() {
             )}
           </div>
 
-          <div className="form-row" style={{ display: 'flex', gap: '12px' }}>
-            <div className="form-group" style={{ flex: 1, marginBottom: '0px' }}>
-              <label className="form-label" htmlFor="reg-dept">Department</label>
-              {iconField(
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>,
-                <select id="reg-dept" className="form-select" value={form.department}
-                  onChange={e => setForm({ ...form, department: e.target.value })}
-                  style={{ paddingLeft: '44px', width: '100%' }}>
-                  {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-              )}
-            </div>
-            <div className="form-group" style={{ flex: 1, marginBottom: '0px' }}>
-              <label className="form-label" htmlFor="reg-role">Role</label>
-              {iconField(
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
-                <select id="reg-role" className="form-select" value={form.role}
-                  onChange={e => setForm({ ...form, role: e.target.value })}
-                  style={{ paddingLeft: '44px', width: '100%' }}>
-                  <option value="employee">Employee</option>
-                  <option value="admin">Admin</option>
-                </select>
-              )}
-            </div>
+          <div className="form-group" style={{ marginBottom: '0px' }}>
+            <label className="form-label" htmlFor="reg-dept">Department</label>
+            {iconField(
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>,
+              <select id="reg-dept" className="form-select" value={form.department}
+                onChange={e => setForm({ ...form, department: e.target.value })}
+                style={{ paddingLeft: '44px', width: '100%' }}>
+                {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            )}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: '0px' }}>
+            <label className="form-label" htmlFor="reg-role">Role</label>
+            {iconField(
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
+              <select id="reg-role" className="form-select" value={form.role}
+                onChange={e => setForm({ ...form, role: e.target.value })}
+                style={{ paddingLeft: '44px', width: '100%' }}>
+                <option value="employee">Employee</option>
+                <option value="admin">Admin</option>
+              </select>
+            )}
           </div>
 
           <div className="form-group" style={{ marginBottom: '0px' }}>
@@ -182,19 +205,21 @@ export default function Register() {
             )}
           </div>
 
-          <button className="btn btn-primary btn-full btn-lg" type="submit" disabled={loading} style={{ position: 'relative', marginTop: '8px' }}>
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <svg style={{ animation: 'spin 1s linear infinite' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" />
-                  <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
-                  <line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" />
-                  <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
-                </svg>
-                Creating account...
-              </span>
-            ) : 'Create account'}
-          </button>
+          <div className="full-width-span">
+            <button className="btn btn-primary btn-full btn-lg" type="submit" disabled={loading} style={{ position: 'relative', marginTop: '8px' }}>
+              {loading ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <svg style={{ animation: 'spin 1s linear infinite' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" />
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+                    <line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" />
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+                  </svg>
+                  Creating account...
+                </span>
+              ) : 'Create account'}
+            </button>
+          </div>
         </form>
         <p className="auth-footer" style={{ marginTop: '24px' }}>Have an account? <Link to="/login" style={{ fontWeight: '600' }}>Sign in</Link></p>
       </div>
