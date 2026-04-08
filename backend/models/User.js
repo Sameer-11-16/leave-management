@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
   leaveBalance: {
     casual: { type: Number, default: 14 },
     medical: { type: Number, default: 10 },
-    special: { type: Number, default: 999 }
+    special: { type: Number, default: 9999 }
   }
 }, { timestamps: true });
 
