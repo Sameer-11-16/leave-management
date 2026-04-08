@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   role: { type: String, enum: ['employee', 'admin'], default: 'employee' },
   department: { type: String, default: 'General' },
   leaveBalance: {
-    casual: { type: Number, default: 10 },
+    casual: { type: Number, default: 14 },
     medical: { type: Number, default: 10 },
     special: { type: Number, default: 999 }
   }

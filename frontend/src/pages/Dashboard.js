@@ -13,8 +13,8 @@ export default function Dashboard() {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- MANUAL BADGE LOGIC START ---
   const isAdmin = user?.role === 'admin';
+
   const badgeStyle = {
     padding: '4px 12px',
     borderRadius: '99px',
@@ -23,27 +23,29 @@ export default function Dashboard() {
     display: 'inline-flex',
     alignItems: 'center',
     marginLeft: '12px',
-    backgroundColor: isAdmin ? '#e0e7ff' : '#dcfce7', 
+    backgroundColor: isAdmin ? '#e0e7ff' : '#dcfce7',
     color: isAdmin ? '#4338ca' : '#15803d',
     border: `1px solid ${isAdmin ? '#c7d2fe' : '#bbf7d0'}`,
     textTransform: 'uppercase',
     verticalAlign: 'middle'
   };
-  // --- MANUAL BADGE LOGIC END ---
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data: p } = await API.get('/users/me');
         setProfile(p);
-        const endpoint = user?.role === 'admin' ? '/leaves/all' : '/leaves/my';
+        const endpoint = isAdmin ? '/leaves/all' : '/leaves/my';
         const { data: l } = await API.get(endpoint);
         setLeaves(Array.isArray(l) ? l : []);
-      } catch (e) { setLeaves([]); }
-      finally { setLoading(false); }
+      } catch (e) {
+        setLeaves([]);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user) fetchData();
-  }, [user]);
+  }, [user, isAdmin]);
 
   const stats = {
     pending: leaves.filter(l => l.status === 'pending').length,
@@ -73,27 +75,19 @@ export default function Dashboard() {
   return (
     <div className="page">
 
-      {/* Header with Badge */}
+      {/* Header with Role Badge */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '28px' }} className="anim-fadeInUp">
         <div>
           <p style={{ fontSize: '13px', color: 'var(--text3)', marginBottom: '4px', fontWeight: '500' }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
-          
-          {/* Badge added here */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
             <h1 className="page-title">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
-            <span style={badgeStyle}>
-              {isAdmin ? '🛡️ Admin' : '👤 Employee'}
-            </span>
+            <span style={badgeStyle}>{isAdmin ? '🛡️ Admin' : '👤 Employee'}</span>
           </div>
-
-          <p className="page-sub">
-            {user?.department} · {isAdmin ? 'Management Portal' : 'Staff Portal'}
-          </p>
+          <p className="page-sub">{user?.department} · {isAdmin ? 'Management Portal' : 'Staff Portal'}</p>
         </div>
-        
-        {user?.role === 'employee' && (
+        {!isAdmin && (
           <Link to="/apply" className="btn btn-primary btn-lg">+ Apply Leave</Link>
         )}
       </div>
@@ -119,8 +113,8 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Leave Balance - Employee */}
-      {user?.role === 'employee' && balance && (
+      {/* Leave Balance - Employee only */}
+      {!isAdmin && balance && (
         <div style={{ marginBottom: '28px' }} className="anim-fadeInUp delay-3">
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)', marginBottom: '16px' }}>
             Leave Balance
@@ -154,7 +148,7 @@ export default function Dashboard() {
             <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)' }}>
               {isAdmin ? 'Recent Staff Requests' : 'Recent My Requests'}
             </h2>
-            <Link to={user?.role === 'admin' ? '/admin' : '/my-leaves'} style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '500' }}>View all →</Link>
+            <Link to={isAdmin ? '/admin' : '/my-leaves'} style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '500' }}>View all →</Link>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {recentLeaves.map((leave, i) => (
@@ -174,9 +168,24 @@ export default function Dashboard() {
                       <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '2px' }}>
                         {new Date(leave.startDate).toLocaleDateString()} → {new Date(leave.endDate).toLocaleDateString()} · {leave.days} day{leave.days !== 1 ? 's' : ''}
                       </div>
+                      {/* Show document link for special leaves */}
+                      {leave.leaveType === 'special' && leave.document && (
+                        <a href={leave.document.startsWith('http') ? leave.document : '#'}
+                          target="_blank" rel="noreferrer"
+                          style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '3px', display: 'inline-block' }}>
+                          📎 View Document
+                        </a>
+                      )}
                     </div>
                   </div>
-                  <span className={`badge badge-${leave.status}`}>{leave.status}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                    <span className={`badge badge-${leave.status}`}>{leave.status}</span>
+                    {isAdmin && leave.leaveType === 'special' && (
+                      <Link to="/admin" style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: '600', textDecoration: 'none', background: 'var(--primary-light)', padding: '2px 8px', borderRadius: '6px' }}>
+                        Review →
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -185,7 +194,7 @@ export default function Dashboard() {
       )}
 
       {/* Empty state */}
-      {leaves.length === 0 && user?.role === 'employee' && (
+      {leaves.length === 0 && !isAdmin && (
         <div className="empty anim-fadeInUp">
           <span className="empty-icon">📋</span>
           <p className="empty-text">No leave requests yet</p>
@@ -195,8 +204,6 @@ export default function Dashboard() {
     </div>
   );
 }
-
-// ... BalanceCard and BreakdownBar functions remain exactly same ...
 
 function BalanceCard({ label, value, total, color, icon, delay, unlimited }) {
   const pct = unlimited ? 100 : (total > 0 ? Math.round((value / total) * 100) : 0);
