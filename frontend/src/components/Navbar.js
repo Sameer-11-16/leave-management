@@ -31,7 +31,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        <Link to="/dashboard" className="navbar-brand">📅 LeaveMS</Link>
+        <Link to="/dashboard" className="navbar-brand">📅 Online Leave Management System</Link>
 
         <div className="navbar-links">
           {links.map(l => (
