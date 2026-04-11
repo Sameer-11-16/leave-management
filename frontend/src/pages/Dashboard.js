@@ -49,6 +49,20 @@ export default function Dashboard() {
   const [profile, setProfile]   = useState(null);
   const [leaves,  setLeaves]    = useState([]);
   const [loading, setLoading]   = useState(true);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = time.toLocaleTimeString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
 
   const isAdmin = user?.role === 'admin';
 
@@ -129,9 +143,19 @@ export default function Dashboard() {
       {/* ── Header ── */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:'12px', marginBottom:'28px' }} className="anim-fadeInUp">
         <div>
-          <p style={{ fontSize:'13px', color:'var(--text3)', marginBottom:'4px', fontWeight:'500' }}>
-            {new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })}
-          </p>
+          <div style={{ display:'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <p style={{ fontSize:'13px', color:'var(--text3)', fontWeight:'500', margin: 0 }}>
+              {time.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' })}
+            </p>
+            <div style={{ 
+              fontSize: '12px', fontWeight: 'bold', color: 'var(--text2)', 
+              background: 'var(--bg3)', padding: '3px 8px', 
+              borderRadius: '8px', border: '1px solid var(--border)', 
+              fontVariantNumeric: 'tabular-nums', letterSpacing: '0.02em', display: 'flex', alignItems: 'center', gap: '6px'
+            }}>
+              <span>⏱️</span> {formattedTime}
+            </div>
+          </div>
           <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:'4px' }}>
             <h1 className="page-title">{getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
             <span style={badgeStyle}>{isAdmin ? '🛡️ Admin' : '👤 Employee'}</span>

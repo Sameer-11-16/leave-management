@@ -160,7 +160,11 @@ export default function Profile() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Department</label>
-                  <input className="form-input" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} placeholder="Your department" />
+                  <select className="form-select" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} style={{ width: '100%' }}>
+                    {['Engineering', 'HR', 'Finance', 'Marketing', 'Operations', 'Design', 'Sales', 'Legal', 'General'].map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Email Address</label>
