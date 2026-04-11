@@ -95,6 +95,17 @@ export default function AdminPanel() {
                     </div>
                     <p className="leave-reason">💬 {leave.reason}</p>
 
+                    {leave.document && (
+                      <div style={{ marginTop: '8px', padding: '8px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '16px' }}>📎</span>
+                        <a href={leave.document.startsWith('http') ? leave.document : '#'} target="_blank" rel="noreferrer" 
+                           style={{ fontSize: '13px', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>
+                          View Attached Document / Link
+                        </a>
+                        {!leave.document.startsWith('http') && <span style={{ fontSize: '12px', color: '#64748b' }}>({leave.document})</span>}
+                      </div>
+                    )}
+
                     {leave.status === 'pending' && (
                       <div className="action-area">
                         <input className="form-input" style={{ fontSize: '13px', padding: '8px 12px' }}
@@ -140,7 +151,8 @@ export default function AdminPanel() {
                 <div className="balance-row">
                   {Object.entries(emp.leaveBalance).filter(([type]) => ['casual','medical','special'].includes(type)).map(([type, val]) => (
                     <span key={type} className={`balance-chip badge badge-${type}`}>
-                      <strong>{val}</strong> {type}
+                      {type !== 'special' && <strong>{val} </strong>}
+                      {type}
                     </span>
                   ))}
                 </div>

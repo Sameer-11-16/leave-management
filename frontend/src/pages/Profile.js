@@ -15,19 +15,25 @@ export default function Profile() {
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [pwLoading, setPwLoading] = useState(false);
 
+  const isAdmin = user?.role === 'admin';
+
   useEffect(() => {
     const load = async () => {
       try {
         const { data: p } = await API.get('/users/me');
         setProfile(p);
         setForm({ name: p.name, department: p.department });
-        const { data: l } = await API.get('/leaves/my');
+        const endpoint = isAdmin ? '/leaves/all' : '/leaves/my';
+        const { data: l } = await API.get(endpoint);
         setLeaves(Array.isArray(l) ? l : []);
-      } catch (e) { toast.error('Failed to load profile'); }
+      } catch (e) {
+        console.error(e);
+        toast.error('Failed to load profile');
+      }
       finally { setLoading(false); }
     };
-    load();
-  }, []);
+    if (user) load();
+  }, [user, isAdmin]);
 
   const handleSave = async () => {
     if (!form.name.trim()) return toast.error('Name is required');
@@ -195,10 +201,10 @@ export default function Profile() {
             {[
               { key: 'casual', label: 'Casual Leave', total: 14, icon: '🏖️', color: '#7c3aed' },
               { key: 'medical', label: 'Medical Leave', total: 10, icon: '💊', color: '#db2777' },
-              { key: 'special', label: 'Special Leave', total: null, icon: '⭐', color: '#0284c7', unlimited: true },
+              { key: 'special', label: 'Special Leave', total: null, icon: '⭐', color: '#0284c7', conditional: true },
             ].map((item, i) => {
               const val = balance[item.key];
-              const pct = item.unlimited ? 100 : (item.total > 0 ? Math.round((val / item.total) * 100) : 0);
+              const pct = item.conditional ? 100 : (item.total > 0 ? Math.round((val / item.total) * 100) : 0);
               return (
                 <div key={item.key} style={{ marginBottom: i < 2 ? '24px' : '0' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -207,8 +213,8 @@ export default function Profile() {
                       <span style={{ fontWeight: '600', color: 'var(--text)', fontSize: '14px' }}>{item.label}</span>
                     </div>
                     <div>
-                      {item.unlimited ? (
-                        <span style={{ fontSize: '18px', fontWeight: '700', color: item.color }}>Unlimited</span>
+                      {item.conditional ? (
+                        <span style={{ fontSize: '18px', fontWeight: '700', color: item.color }}>Conditional</span>
                       ) : (
                         <span>
                           <span style={{ fontSize: '24px', fontWeight: '700', color: item.color }}>{val}</span>
@@ -220,7 +226,7 @@ export default function Profile() {
                   <div className="stat-bar">
                     <div className="stat-fill" style={{ width: `${pct}%`, background: item.color }} />
                   </div>
-                  {!item.unlimited && (
+                  {!item.conditional && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
                       <span style={{ fontSize: '11px', color: 'var(--text3)' }}>{item.total - val} used</span>
                       <span style={{ fontSize: '11px', color: item.color, fontWeight: '600' }}>{pct}% remaining</span>
@@ -237,7 +243,7 @@ export default function Profile() {
       {tab === 'history' && (
         <div className="card anim-scaleIn">
           <div className="card-header">
-            <span style={{ fontWeight: '700', color: 'var(--text)', fontSize: '15px' }}>Leave History</span>
+            <span style={{ fontWeight: '700', color: 'var(--text)', fontSize: '15px' }}>{isAdmin ? 'All Staff Requests' : 'Leave History'}</span>
             <span style={{ fontSize: '12px', color: 'var(--text3)', background: 'var(--bg3)', padding: '3px 10px', borderRadius: '99px' }}>{leaves.length} requests</span>
           </div>
           <div>
@@ -252,7 +258,10 @@ export default function Profile() {
                     {typeIcon(leave.leaveType)}
                   </div>
                   <div>
-                    <div style={{ fontWeight: '600', color: 'var(--text)', fontSize: '14px' }}>{typeLabel(leave.leaveType)} Leave</div>
+                    <div style={{ fontWeight: '600', color: 'var(--text)', fontSize: '14px' }}>
+                      {typeLabel(leave.leaveType)} Leave
+                      {isAdmin && leave.employee?.name && <span style={{ color: 'var(--text3)', fontWeight: '400', marginLeft: '6px' }}>· {leave.employee.name}</span>}
+                    </div>
                     <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '2px' }}>
                       {new Date(leave.startDate).toLocaleDateString()} → {new Date(leave.endDate).toLocaleDateString()} · {leave.days} day{leave.days !== 1 ? 's' : ''}
                     </div>

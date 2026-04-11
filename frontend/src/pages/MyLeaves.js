@@ -62,7 +62,7 @@ export default function MyLeaves() {
               <div className="leave-card-top">
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span className={`badge badge-${leave.leaveType}`}>
-                    {({casual:'Casual',medical:'Medical',special:'Special'}[leave.leaveType] || leave.leaveType)}
+                    {({ casual: 'Casual', medical: 'Medical', special: 'Special' }[leave.leaveType] || leave.leaveType)}
                   </span>
                   <span className={`badge badge-${leave.status}`}>{leave.status}</span>
                 </div>

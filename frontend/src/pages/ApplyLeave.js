@@ -6,7 +6,7 @@ import API from '../api';
 const LEAVE_INFO = {
   casual: { label: 'Casual Leave', icon: '🏖️', color: '#7c3aed', total: 14, desc: 'For personal errands and short breaks' },
   medical: { label: 'Medical Leave', icon: '💊', color: '#db2777', total: 10, desc: 'For medical appointments and illness' },
-  special: { label: 'Special Leave', icon: '⭐', color: '#0284c7', total: null, desc: 'Unlimited — document proof required' },
+  special: { label: 'Special Leave', icon: '⭐', color: '#0284c7', total: null, desc: 'Conditional — document proof required' },
 };
 
 // Popup Modal Component
@@ -107,7 +107,7 @@ export default function ApplyLeave() {
   };
 
   return (
-    <div className="page anim-fadeInUp" style={{ maxWidth: '640px' }}>
+    <div className="page" style={{ maxWidth: '640px' }}>
 
       {/* Insufficient Leave Popup */}
       <InsufficientModal
@@ -123,38 +123,36 @@ export default function ApplyLeave() {
         <p className="page-sub">Fill in the details below to submit your request</p>
       </div>
 
-      {/* Leave Type Selector Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
-        {Object.entries(LEAVE_INFO).map(([type, lInfo]) => {
-          const bal = type === 'special' ? null : (balance ? balance[type] : null);
-          const isSelected = form.leaveType === type;
-          const isFull = type !== 'special' && bal !== null && bal <= 0;
-          return (
-            <div key={type}
-              onClick={() => setForm({ ...form, leaveType: type })}
-              style={{
-                padding: '14px', borderRadius: '14px', cursor: 'pointer',
-                border: `2px solid ${isSelected ? lInfo.color : 'var(--border)'}`,
-                background: isSelected ? lInfo.color + '12' : 'var(--bg2)',
-                transition: 'all 0.2s ease',
-                transform: isSelected ? 'translateY(-2px)' : 'none',
-                boxShadow: isSelected ? `0 4px 16px ${lInfo.color}30` : 'none',
-                opacity: isFull ? 0.6 : 1,
-              }}>
-              <div style={{ fontSize: '24px', marginBottom: '6px' }}>{lInfo.icon}</div>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: isSelected ? lInfo.color : 'var(--text)', marginBottom: '2px' }}>
-                {lInfo.label}
-              </div>
-              <div style={{ fontSize: '11px', color: isFull ? 'var(--danger)' : 'var(--text3)', fontWeight: isFull ? '600' : '400' }}>
-                {type === 'special' ? 'Unlimited' : (bal !== null ? (isFull ? '❌ No balance' : `${bal} days left`) : `${lInfo.total} days`)}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
       <div className="card">
         <div className="card-body">
+
+          {/* Leave Type Selector Dropdown */}
+          <div className="form-group">
+            <label className="form-label">Select Leave Type</label>
+            <select 
+              className="form-input" 
+              value={form.leaveType}
+              onChange={e => setForm({ ...form, leaveType: e.target.value })}
+              style={{ 
+                paddingRight: '40px', 
+                background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") no-repeat right 12px center/18px`, 
+                appearance: 'none',
+                color: 'inherit',
+                backgroundColor: 'inherit'
+              }}
+            >
+              {Object.entries(LEAVE_INFO).map(([type, lInfo]) => {
+                const bal = type === 'special' ? null : (balance ? balance[type] : null);
+                const balText = type === 'special' ? '(Conditional)' : (bal !== null ? `(${bal} days left)` : '');
+                const isFull = type !== 'special' && bal !== null && bal <= 0;
+                return (
+                  <option key={type} value={type} disabled={isFull}>
+                    {lInfo.icon} {lInfo.label} {balText} {isFull ? '— NO BALANCE' : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
 
           {/* Leave info banner */}
           <div style={{ padding: '12px 14px', borderRadius: '10px', background: info.color + '12', border: `1px solid ${info.color}30`, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>

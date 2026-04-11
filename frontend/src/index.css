@@ -67,7 +67,7 @@ a:hover { text-decoration: underline; }
 /* ── Animations ── */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeInLeft {
@@ -106,7 +106,7 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 20px; border-radius: 10px;
   font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-  cursor: pointer; border: none; transition: all 0.25s ease; white-space: nowrap;
+  cursor: pointer; border: none; transition: cubic-bezier(0.4, 0, 0.2, 1) 0.3s; white-space: nowrap;
   position: relative; overflow: hidden;
 }
 .btn::after {
@@ -146,6 +146,10 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
   background: var(--bg2);
 }
+.form-input option {
+  background-color: var(--bg2);
+  color: var(--text);
+}
 .form-textarea { resize: vertical; min-height: 90px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
@@ -153,10 +157,10 @@ a:hover { text-decoration: underline; }
 .card {
   background: var(--bg2); border-radius: 16px;
   box-shadow: var(--shadow); border: 1px solid var(--border2);
-  transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(8px);
 }
-.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
 .card-body { padding: 24px; }
 .card-header {
   padding: 18px 24px; border-bottom: 1px solid var(--border2);
@@ -204,8 +208,11 @@ a:hover { text-decoration: underline; }
 [data-theme="dark"] .badge-special { background: #0c1a40; color: #7dd3fc; }
 
 /* ── Page Layout ── */
-.page { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); }
+.page { 
+  max-width: 960px; margin: 0 auto; padding: 32px 20px; 
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.page-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); letter-spacing: -0.01em; }
 .page-sub { color: var(--text3); font-size: 14px; margin-top: 4px; }
 
 /* ── Stats Grid ── */

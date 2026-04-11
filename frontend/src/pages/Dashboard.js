@@ -279,7 +279,7 @@ export default function Dashboard() {
           <div className="stats-grid">
             <BalanceCard label="Casual Leave"  value={balance.casual}  total={14} color="#7c3aed" icon="🏖️" delay={1} />
             <BalanceCard label="Medical Leave" value={balance.medical} total={10} color="#db2777" icon="💊" delay={2} />
-            <BalanceCard label="Special Leave" value={null} total={null} color="#0284c7" icon="⭐" delay={3} unlimited />
+            <BalanceCard label="Special Leave" value={null} total={null} color="#0284c7" icon="⭐" delay={3} conditional />
           </div>
         </div>
       )}
@@ -347,18 +347,18 @@ export default function Dashboard() {
 }
 
 /* ── BalanceCard ── */
-function BalanceCard({ label, value, total, color, icon, delay, unlimited }) {
-  const pct = unlimited ? 100 : (total > 0 ? Math.round((value / total) * 100) : 0);
+function BalanceCard({ label, value, total, color, icon, delay, conditional }) {
+  const pct = conditional ? 100 : (total > 0 ? Math.round((value / total) * 100) : 0);
   return (
     <div className={`stat-card delay-${delay}`} style={{ borderLeft:`3px solid ${color}` }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'12px' }}>
         <span style={{ fontSize:'13px', fontWeight:'600', color:'var(--text2)', textTransform:'uppercase', letterSpacing:'0.05em' }}>{label}</span>
         <span style={{ fontSize:'22px' }}>{icon}</span>
       </div>
-      {unlimited ? (
+      {conditional ? (
         <div>
-          <div style={{ fontSize:'22px', fontWeight:'700', color, marginBottom:'4px' }}>Unlimited</div>
-          <div style={{ fontSize:'12px', color:'var(--text3)' }}>No balance limit</div>
+          <div style={{ fontSize:'22px', fontWeight:'700', color, marginBottom:'4px' }}>Conditional</div>
+          <div style={{ fontSize:'12px', color:'var(--text3)' }}>Subject to admin approval</div>
         </div>
       ) : (
         <div>
