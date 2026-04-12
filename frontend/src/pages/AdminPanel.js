@@ -44,16 +44,16 @@ export default function AdminPanel() {
       </div>
 
       <div className="stats-grid" style={{ marginBottom: '28px' }}>
-        <div className="stat-card" style={{ borderTop: '3px solid #d97706' }}>
-          <div className="stat-value" style={{ color: '#d97706' }}>{counts.pending}</div>
+        <div className="stat-card" style={{ borderTop: '3px solid var(--warning)' }}>
+          <div className="stat-value" style={{ color: 'var(--warning)' }}>{counts.pending}</div>
           <div className="stat-label">Pending</div>
         </div>
-        <div className="stat-card" style={{ borderTop: '3px solid #16a34a' }}>
-          <div className="stat-value" style={{ color: '#16a34a' }}>{counts.approved}</div>
+        <div className="stat-card" style={{ borderTop: '3px solid var(--success)' }}>
+          <div className="stat-value" style={{ color: 'var(--success)' }}>{counts.approved}</div>
           <div className="stat-label">Approved</div>
         </div>
-        <div className="stat-card" style={{ borderTop: '3px solid #dc2626' }}>
-          <div className="stat-value" style={{ color: '#dc2626' }}>{counts.rejected}</div>
+        <div className="stat-card" style={{ borderTop: '3px solid var(--danger)' }}>
+          <div className="stat-value" style={{ color: 'var(--danger)' }}>{counts.rejected}</div>
           <div className="stat-label">Rejected</div>
         </div>
       </div>
@@ -82,8 +82,8 @@ export default function AdminPanel() {
                 <div key={leave._id} className="leave-card">
                   <div className="leave-card-top">
                     <div>
-                      <span style={{ fontWeight: '600', color: '#1e293b' }}>{leave.employee?.name}</span>
-                      <span style={{ color: '#94a3b8', fontSize: '13px', marginLeft: '8px' }}>{leave.employee?.department}</span>
+                      <span style={{ fontWeight: '600', color: 'var(--text)' }}>{leave.employee?.name}</span>
+                      <span style={{ color: 'var(--text3)', fontSize: '13px', marginLeft: '8px' }}>{leave.employee?.department}</span>
                     </div>
                     <span className={`badge badge-${leave.status}`}>{leave.status}</span>
                   </div>
@@ -99,10 +99,10 @@ export default function AdminPanel() {
                       <div style={{ marginTop: '8px', padding: '8px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '16px' }}>📎</span>
                         <a href={leave.document.startsWith('http') ? leave.document : '#'} target="_blank" rel="noreferrer" 
-                           style={{ fontSize: '13px', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>
+                           style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>
                           View Attached Document / Link
                         </a>
-                        {!leave.document.startsWith('http') && <span style={{ fontSize: '12px', color: '#64748b' }}>({leave.document})</span>}
+                        {!leave.document.startsWith('http') && <span style={{ fontSize: '12px', color: 'var(--text3)' }}>({leave.document})</span>}
                       </div>
                     )}
 
@@ -144,8 +144,8 @@ export default function AdminPanel() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div className="avatar">{emp.name.charAt(0).toUpperCase()}</div>
                   <div>
-                    <div style={{ fontWeight: '600', color: '#1e293b' }}>{emp.name}</div>
-                    <div style={{ fontSize: '13px', color: '#64748b' }}>{emp.email} · {emp.department}</div>
+                    <div style={{ fontWeight: '600', color: 'var(--text)' }}>{emp.name}</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{emp.email} · {emp.department}</div>
                   </div>
                 </div>
                 <div className="balance-row">

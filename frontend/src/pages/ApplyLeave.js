@@ -187,14 +187,14 @@ export default function ApplyLeave() {
 
             {/* Days count */}
             {days > 0 && (
-              <div className="days-banner">
+              <div className="days-banner anim-scaleIn">
                 📅 {days} day{days > 1 ? 's' : ''} of {info.label}
               </div>
             )}
 
             {/* Balance alert */}
             {days > 0 && form.leaveType !== 'special' && remaining !== null && balStatus && (
-              <div className={`balance-alert balance-${balStatus}`}>
+              <div className={`balance-alert balance-${balStatus} anim-fadeInUp`}>
                 {balStatus === 'ok' && `✅ You have ${remaining} days remaining — sufficient for this request`}
                 {balStatus === 'warn' && `⚠️ Low balance — only ${remaining} day${remaining !== 1 ? 's' : ''} remaining after this`}
                 {balStatus === 'low' && `❌ Not enough balance — need ${days} days but only ${remaining} available`}

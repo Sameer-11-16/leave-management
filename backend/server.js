@@ -13,6 +13,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/leaves', require('./routes/leaves'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/holidays', require('./routes/holidays'));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
