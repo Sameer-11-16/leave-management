@@ -117,7 +117,7 @@ export default function Calendar() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
           <div>
             <h1 className="page-title">📅 Leave Calendar</h1>
-            <p className="page-sub">{leaves.length} leaves · {holidays.length} holidays</p>
+            <p className="page-sub">{leaves.length} leaves · {holidays.filter(h => new Date(h.date).getFullYear() === year).length} holidays in {year}</p>
           </div>
           {user?.role === 'admin' && (
             <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>

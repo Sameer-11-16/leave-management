@@ -136,6 +136,7 @@ export default function Register() {
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
                 <input id="reg-name" className="form-input" placeholder="John Smith" value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })} required
+                  autoComplete="name"
                   style={{ paddingLeft: '44px', height: '52px' }} />
               )}
             </div>
@@ -146,6 +147,7 @@ export default function Register() {
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
                 <input id="reg-email" className="form-input" type="email" placeholder="you@company.com" value={form.email}
                   onChange={e => setForm({ ...form, email: e.target.value })} required
+                  autoComplete="email"
                   style={{ paddingLeft: '44px', height: '52px' }} />
               )}
             </div>
@@ -183,6 +185,7 @@ export default function Register() {
                 </span>
                 <input id="reg-password" className="form-input" type={showPass ? 'text' : 'password'} placeholder="Min 6 characters"
                   value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required
+                  autoComplete="new-password"
                   style={{ paddingLeft: '44px', paddingRight: '44px', width: '100%', boxSizing: 'border-box', height: '52px' }} />
                 <button type="button" onClick={() => setShowPass(!showPass)}
                   style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center' }}
@@ -208,6 +211,7 @@ export default function Register() {
                 </span>
                 <input id="reg-confirm" className="form-input" type={showConfirm ? 'text' : 'password'} placeholder="Re-enter password"
                   value={form.confirmPassword} onChange={e => setForm({ ...form, confirmPassword: e.target.value })} required
+                  autoComplete="new-password"
                   style={{
                     paddingLeft: '44px', paddingRight: '44px', width: '100%', boxSizing: 'border-box', height: '52px',
                     borderColor: form.confirmPassword && (form.password !== form.confirmPassword ? '#ef4444' : '#10b981')

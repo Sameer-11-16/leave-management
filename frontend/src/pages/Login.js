@@ -71,6 +71,7 @@ export default function Login() {
                 </svg>
                 <input id="email" className="form-input" type="email" placeholder="name@company.com"
                   value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required 
+                  autoComplete="email"
                   style={{ paddingLeft: '48px', height: '52px' }} />
               </div>
             </div>
@@ -87,6 +88,7 @@ export default function Login() {
                 </svg>
                 <input id="password" className="form-input" type={showPassword ? "text" : "password"} placeholder="••••••••"
                   value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required 
+                  autoComplete="current-password"
                   style={{ paddingLeft: '48px', paddingRight: '48px', height: '52px' }} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label={showPassword ? "Hide password" : "Show password"}>
                   {showPassword ? (

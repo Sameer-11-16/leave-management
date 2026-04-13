@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API = axios.create({ 
   baseURL: window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api' 
+    ? 'http://localhost:5001/api' 
     : 'https://leave-management-8xqz.onrender.com/api' 
 });
 
