@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import API from '../api';
-
+import Skeleton from '../components/Skeleton';
 export default function AdminPanel() {
   const [leaves, setLeaves] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -34,7 +34,24 @@ export default function AdminPanel() {
   const filtered = filter === 'all' ? leaves : leaves.filter(l => l.status === filter);
   const counts = { pending: leaves.filter(l => l.status === 'pending').length, approved: leaves.filter(l => l.status === 'approved').length, rejected: leaves.filter(l => l.status === 'rejected').length };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return (
+    <div className="page">
+      <div className="page-header" style={{ marginBottom: '28px' }}>
+        <Skeleton width="200px" height="32px" style={{ marginBottom: '8px' }} />
+        <Skeleton width="300px" height="16px" />
+      </div>
+      <div className="stats-grid" style={{ marginBottom: '28px' }}>
+        {[1, 2, 3].map(i => <div key={i} className="stat-card" style={{ border: 'none', boxShadow: 'none' }}><Skeleton width="60px" height="40px" style={{ marginBottom: '12px' }} /><Skeleton width="80px" height="16px" /></div>)}
+      </div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', borderBottom: '2px solid var(--border2)' }}>
+        <Skeleton width="120px" height="35px" borderRadius="8px 8px 0 0" />
+        <Skeleton width="120px" height="35px" borderRadius="8px 8px 0 0" />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {[1, 2, 3].map(i => <Skeleton key={i} width="100%" height="160px" borderRadius="16px" />)}
+      </div>
+    </div>
+  );
 
   return (
     <div className="page">

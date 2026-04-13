@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../api';
-
+import Skeleton from '../components/Skeleton';
 const LEAVE_INFO = {
   casual: { label: 'Casual Leave', icon: '🏖️', color: '#7c3aed', total: 14, desc: 'For personal errands and short breaks' },
   medical: { label: 'Medical Leave', icon: '💊', color: '#db2777', total: 10, desc: 'For medical appointments and illness' },
@@ -49,12 +49,16 @@ function InsufficientModal({ show, leaveType, remaining, needed, onClose }) {
 export default function ApplyLeave() {
   const [form, setForm] = useState({ leaveType: 'casual', startDate: '', endDate: '', reason: '', document: '' });
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [balance, setBalance] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/users/me').then(({ data }) => setBalance(data.leaveBalance)).catch(() => {});
+    API.get('/users/me')
+      .then(({ data }) => setBalance(data.leaveBalance))
+      .catch(() => {})
+      .finally(() => setPageLoading(false));
   }, []);
 
   const days = form.startDate && form.endDate
@@ -73,6 +77,29 @@ export default function ApplyLeave() {
   };
 
   const balStatus = getBalanceStatus();
+
+  if (pageLoading) return (
+    <div className="page" style={{ maxWidth: '640px' }}>
+      <div style={{ marginBottom: '28px' }}>
+        <Skeleton width="220px" height="32px" style={{ marginBottom: '8px' }} />
+        <Skeleton width="300px" height="16px" />
+      </div>
+      <div className="card">
+        <div className="card-body">
+          <Skeleton width="120px" height="16px" style={{ marginBottom: '8px' }} />
+          <Skeleton width="100%" height="45px" borderRadius="10px" style={{ marginBottom: '20px' }} />
+          <Skeleton width="100%" height="70px" borderRadius="10px" style={{ marginBottom: '20px' }} />
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ flex: 1 }}><Skeleton width="80px" height="16px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="45px" borderRadius="10px" /></div>
+            <div style={{ flex: 1 }}><Skeleton width="80px" height="16px" style={{ marginBottom: '8px' }} /><Skeleton width="100%" height="45px" borderRadius="10px" /></div>
+          </div>
+          <Skeleton width="60px" height="16px" style={{ marginBottom: '8px' }} />
+          <Skeleton width="100%" height="90px" borderRadius="10px" style={{ marginBottom: '24px' }} />
+          <Skeleton width="100%" height="50px" borderRadius="12px" />
+        </div>
+      </div>
+    </div>
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();

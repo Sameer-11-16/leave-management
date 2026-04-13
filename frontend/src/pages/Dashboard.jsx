@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API from '../api';
+import Skeleton from '../components/Skeleton';
 import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -130,9 +131,38 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ width: '40px', height: '40px', border: '3px solid var(--border)', borderTop: '3px solid var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <p style={{ color: 'var(--text3)', marginTop: '16px' }}>Loading dashboard...</p>
+      <div className="page">
+        {/* Header Skeleton */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '28px' }}>
+          <div>
+            <Skeleton width="150px" height="20px" style={{ marginBottom: '8px' }} />
+            <Skeleton width="300px" height="40px" style={{ marginBottom: '8px' }} />
+            <Skeleton width="200px" height="20px" />
+          </div>
+          <Skeleton width="140px" height="48px" borderRadius="12px" />
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="stats-grid">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="stat-card" style={{ border: 'none' }}>
+              <Skeleton width="60px" height="40px" style={{ marginBottom: '12px' }} />
+              <Skeleton width="100px" height="20px" />
+            </div>
+          ))}
+        </div>
+
+        {/* Charts Skeleton */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+          {[1, 2].map(i => (
+            <div key={i} className="card">
+              <div className="card-body">
+                <Skeleton width="150px" height="24px" style={{ marginBottom: '16px' }} />
+                <Skeleton width="100%" height="200px" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

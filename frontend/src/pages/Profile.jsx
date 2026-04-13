@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
-
+import Skeleton from '../components/Skeleton';
 export default function Profile() {
   const { user, login } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -82,9 +82,25 @@ export default function Profile() {
   });
 
   if (loading) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-      <div style={{ width: '40px', height: '40px', border: '3px solid var(--border)', borderTop: '3px solid var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      <p style={{ color: 'var(--text3)', marginTop: '16px' }}>Loading profile...</p>
+    <div className="page" style={{ maxWidth: '760px' }}>
+      <div className="profile-hero" style={{ marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <Skeleton width="72px" height="72px" variant="circular" />
+        <div>
+          <Skeleton width="180px" height="28px" style={{ marginBottom: '8px', opacity: 0.8 }} />
+          <Skeleton width="220px" height="16px" style={{ marginBottom: '10px', opacity: 0.5 }} />
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Skeleton width="80px" height="24px" borderRadius="99px" />
+            <Skeleton width="80px" height="24px" borderRadius="99px" />
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+        {[1, 2, 3, 4].map(i => <Skeleton key={i} width="100%" height="90px" borderRadius="16px" />)}
+      </div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', borderBottom: '2px solid var(--border2)' }}>
+        {[1, 2, 3, 4].map(i => <Skeleton key={i} width="100px" height="40px" borderRadius="4px 4px 0 0" />)}
+      </div>
+      <Skeleton width="100%" height="250px" borderRadius="16px" />
     </div>
   );
 

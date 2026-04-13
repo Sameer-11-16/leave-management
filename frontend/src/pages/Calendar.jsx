@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
-
+import Skeleton from '../components/Skeleton';
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -106,7 +106,18 @@ export default function Calendar() {
     }
   };
 
-  if (loading) return <div className="loading">Loading calendar...</div>;
+  if (loading) return (
+    <div className="page">
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div>
+          <Skeleton width="200px" height="32px" style={{ marginBottom: '8px' }} />
+          <Skeleton width="180px" height="16px" />
+        </div>
+        <Skeleton width="140px" height="40px" borderRadius="12px" />
+      </div>
+      <Skeleton width="100%" height="500px" borderRadius="16px" style={{ marginBottom: '20px' }} />
+    </div>
+  );
 
   const selectedEvents = selected ? getEvents(selected.day, selected.cur) : [];
 

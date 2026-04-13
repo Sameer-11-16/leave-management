@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import API from '../api';
-
+import Skeleton from '../components/Skeleton';
 export default function MyLeaves() {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +28,23 @@ export default function MyLeaves() {
 
   const filtered = filter === 'all' ? leaves : leaves.filter(l => l.status === filter);
 
-  if (loading) return <div className="loading">Loading your leaves...</div>;
+  if (loading) return (
+    <div className="page">
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div>
+          <Skeleton width="180px" height="32px" style={{ marginBottom: '8px' }} />
+          <Skeleton width="120px" height="16px" />
+        </div>
+        <Skeleton width="140px" height="40px" borderRadius="12px" />
+      </div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        {[1, 2, 3, 4].map(i => <Skeleton key={i} width="80px" height="30px" borderRadius="99px" />)}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {[1, 2, 3].map(i => <Skeleton key={i} width="100%" height="160px" borderRadius="16px" />)}
+      </div>
+    </div>
+  );
 
   return (
     <div className="page">

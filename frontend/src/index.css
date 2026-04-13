@@ -1239,3 +1239,17 @@ a:hover {
     justify-content: center;
   }
 }
+
+/* ── Skeleton Loading ── */
+.skeleton {
+  background: linear-gradient(110deg, var(--bg3) 8%, var(--border2) 18%, var(--bg3) 33%);
+  background-size: 200% 100%;
+  animation: 1.5s shine linear infinite;
+  border-radius: 8px;
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
+  }
+}
