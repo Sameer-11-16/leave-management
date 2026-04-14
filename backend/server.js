@@ -9,6 +9,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health Check
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok', uptime: process.uptime() }));
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/leaves', require('./routes/leaves'));
