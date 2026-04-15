@@ -53,9 +53,6 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (otpSent && !form.otp) {
-      return toast.error('Please enter the OTP sent to your email');
-    }
     if (form.password !== form.confirmPassword) {
       return toast.error('Passwords do not match');
     }
@@ -64,28 +61,31 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const payload = {
+      // Step 1: Send OTP to verification email
+      await API.post('/auth/send-otp', { email: form.email });
+      
+      // Step 2: Store data and navigate to separate OTP page
+      const registrationData = {
         name: form.name,
         email: form.email,
         password: form.password,
         role: form.role,
-        department: form.department,
-        otp: form.otp
+        department: form.department
       };
-      const { data } = await API.post('/auth/register', payload);
-      login(data);
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
+      sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
+      
+      toast.success('OTP sent to your email! Please verify.');
+      navigate('/verify-registration', { state: registrationData });
     } catch (err) {
-      toast.error(err.response?.data?.msg || 'Registration failed');
+      toast.error(err.response?.data?.msg || 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
   };
 
   const iconField = (icon, children) => (
-    <div style={{ position: 'relative' }}>
-      <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)', pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>{icon}</span>
+    <div className="input-icon-wrapper">
+      <span className="input-icon" style={{ height: '52px' }}>{icon}</span>
       {children}
     </div>
   );
@@ -99,31 +99,8 @@ export default function Register() {
         </div>
       </div>
 
-      <style>
-        {`
-          .register-form-grid {
-            display: grid;
-            gap: 16px;
-            grid-template-columns: 1fr;
-          }
-          
-          .full-width-span {
-            grid-column: 1 / -1;
-          }
-
-          @media (min-width: 640px) {
-            .register-form-grid {
-              grid-template-columns: 1fr 1fr;
-            }
-            .auth-card.register-card-wide {
-              max-width: 680px;
-            }
-          }
-        `}
-      </style>
-
       <div className="auth-form-side" style={{ padding: '20px' }}>
-        <div className="auth-card register-card-wide">
+        <div className="auth-card register-card-wide anim-scaleIn">
           <div className="auth-header">
             <div className="auth-logo" style={{ 
               display: 'inline-flex', 
@@ -148,7 +125,7 @@ export default function Register() {
             <p className="auth-sub">Create your profile to get started</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="register-form-grid">
+          <form onSubmit={handleSubmit} className="auth-form-row-responsive">
             
             <div className="form-group" style={{ marginBottom: '0px' }}>
               <label className="form-label" htmlFor="reg-name">Full name</label>
@@ -163,40 +140,14 @@ export default function Register() {
 
             <div className="form-group" style={{ marginBottom: '0px' }}>
               <label className="form-label" htmlFor="reg-email">Email address</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <div style={{ flex: 1 }}>
-                  {iconField(
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
-                    <input id="reg-email" className="form-input" type="email" placeholder="you@company.com" value={form.email}
-                      onChange={e => setForm({ ...form, email: e.target.value })} required
-                      autoComplete="email"
-                      disabled={otpSent}
-                      style={{ paddingLeft: '44px', height: '52px' }} />
-                  )}
-                </div>
-                <button 
-                  type="button" 
-                  onClick={sendOtpHandler} 
-                  disabled={sendOtpLoading || otpSent} 
-                  className="btn btn-primary" 
-                  style={{ padding: '0 15px', fontSize: '0.85rem', flexShrink: 0, height: '52px' }}
-                >
-                  {sendOtpLoading ? '...' : otpSent ? 'Sent' : 'Send OTP'}
-                </button>
-              </div>
+              {iconField(
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
+                <input id="reg-email" className="form-input" type="email" placeholder="you@company.com" value={form.email}
+                  onChange={e => setForm({ ...form, email: e.target.value })} required
+                  autoComplete="email"
+                  style={{ paddingLeft: '44px', height: '52px' }} />
+              )}
             </div>
-
-            {otpSent && (
-              <div className="form-group full-width-span" style={{ marginBottom: '0px' }}>
-                <label className="form-label" htmlFor="reg-otp">Enter OTP</label>
-                {iconField(
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>,
-                  <input id="reg-otp" className="form-input" placeholder="6-digit code" value={form.otp}
-                    onChange={e => setForm({ ...form, otp: e.target.value })} required
-                    style={{ paddingLeft: '44px', height: '52px', fontWeight: 'bold', letterSpacing: '4px' }} />
-                )}
-              </div>
-            )}
 
             <div className="form-group" style={{ marginBottom: '0px' }}>
               <label className="form-label" htmlFor="reg-dept">Department</label>
@@ -279,8 +230,8 @@ export default function Register() {
                       <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" /><line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
                       <line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" />
                       <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" /><line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
-                    </svg>
-                    Signing up...
+                  </svg>
+                    Continue to Verify...
                   </span>
                 ) : 'Sign Up'}
               </button>

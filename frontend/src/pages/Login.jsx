@@ -61,11 +61,11 @@ export default function Login() {
             <p className="auth-sub">Sign in to your account to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div className="form-group" style={{ marginBottom: '0' }}>
+          <form onSubmit={handleSubmit} className="auth-form-row-responsive anim-fadeInUp">
+            <div className="form-group">
               <label className="form-label" htmlFor="email">Email address</label>
-              <div style={{ position: 'relative' }}>
-                <svg style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="input-icon-wrapper">
+                <svg className="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
@@ -79,7 +79,7 @@ export default function Login() {
             <div className="form-group" style={{ marginBottom: '0' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '7px' }}>
                 <label className="form-label" htmlFor="password" style={{ marginBottom: '0' }}>Password</label>
-                <Link to="#" style={{ fontSize: '11px', fontWeight: '600', color: 'var(--primary)' }}>Forgot password?</Link>
+                <Link to="/forgot-password" style={{ fontSize: '11px', fontWeight: '600', color: 'var(--primary)' }}>Forgot password?</Link>
               </div>
               <div style={{ position: 'relative' }}>
                 <svg style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text3)' }} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

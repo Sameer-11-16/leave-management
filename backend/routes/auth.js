@@ -122,4 +122,49 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Forgot Password - Send OTP
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ msg: 'User with this email does not exist' });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await OTP.findOneAndUpdate({ email }, { otp, createdAt: Date.now() }, { new: true, upsert: true });
+
+    console.log(`[LMS DEBUG] Reset Password OTP for ${email}: ${otp}`);
+    try {
+      await sendOTPEmail(email, otp);
+    } catch (e) {
+      console.warn('Email failed, check console');
+    }
+    res.json({ msg: 'Reset OTP sent to your email' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+// Reset Password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    const otpRecord = await OTP.findOne({ email });
+    if (!otpRecord || otpRecord.otp !== otp) {
+      return res.status(400).json({ msg: 'Invalid or expired OTP' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    await OTP.deleteOne({ email });
+
+    res.json({ msg: 'Password reset successfully. You can now login.' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 module.exports = router;

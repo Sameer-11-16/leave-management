@@ -171,7 +171,7 @@ export default function Dashboard() {
     <div className="page">
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '28px' }} className="anim-fadeInUp">
+      <div className="page-header-container anim-fadeInUp">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
             <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '500', margin: 0 }}>
@@ -220,7 +220,7 @@ export default function Dashboard() {
 
       {/* ── Charts Row ── */}
       {leaves.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '28px' }} className="anim-fadeInUp delay-2">
+        <div className="grid-charts anim-fadeInUp delay-2">
 
           {/* Donut — Leave Status */}
           <div className="card">
@@ -350,7 +350,8 @@ export default function Dashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {recentLeaves.map((leave, i) => (
               <div key={leave._id} className={`card delay-${i + 1}`} style={{ animation: 'fadeInUp 0.4s ease both' }}>
-                <div style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ padding: '14px 20px' }}>
+                  <div className="flex-between-responsive" style={{ alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: (LEAVE_COLORS[leave.leaveType] || '#64748b') + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
                       {LEAVE_ICONS[leave.leaveType] || '📋'}
@@ -383,7 +384,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
           </div>
         </div>
       )}

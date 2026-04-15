@@ -109,20 +109,22 @@ export default function Profile() {
 
       {/* Profile Hero */}
       <div className="profile-hero anim-fadeInUp" style={{ marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
-          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: '3px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', fontWeight: '700', color: '#fff', flexShrink: 0, backdropFilter: 'blur(8px)' }}>
-            {profile?.name?.charAt(0).toUpperCase()}
-          </div>
-          <div style={{ flex: 1, minWidth: '140px' }}>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '22px', color: '#fff', margin: '0 0 4px' }}>{profile?.name}</h1>
-            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13px', margin: '0 0 10px' }}>{profile?.email}</p>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ padding: '3px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: '600', background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(4px)' }}>
-                {profile?.department}
-              </span>
-              <span style={{ padding: '3px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: '600', background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(4px)' }}>
-                {user?.role === 'admin' ? '👑 Admin' : '👤 Employee'}
-              </span>
+        <div className="flex-between-responsive" style={{ alignItems: 'center', position: 'relative', zIndex: 1, gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', flex: 1 }}>
+            <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: '3px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', fontWeight: '700', color: '#fff', flexShrink: 0, backdropFilter: 'blur(8px)' }}>
+              {profile?.name?.charAt(0).toUpperCase()}
+            </div>
+            <div style={{ flex: 1, minWidth: '140px' }}>
+              <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '22px', color: '#fff', margin: '0 0 4px' }}>{profile?.name}</h1>
+              <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '13px', margin: '0 0 10px' }}>{profile?.email}</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ padding: '3px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: '600', background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(4px)' }}>
+                  {profile?.department}
+                </span>
+                <span style={{ padding: '3px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: '600', background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(4px)' }}>
+                  {isAdmin ? '👑 Admin' : '👤 Employee'}
+                </span>
+              </div>
             </div>
           </div>
           <button onClick={() => setEditMode(!editMode)}
@@ -200,7 +202,7 @@ export default function Profile() {
                   { label: 'Role', value: user?.role === 'admin' ? 'Administrator' : 'Employee' },
                   { label: 'Member Since', value: profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A' },
                 ].map((row, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 4 ? '1px solid var(--border2)' : 'none' }}>
+                  <div key={i} className="flex-between-responsive" style={{ alignItems: 'center', padding: '14px 0', borderBottom: i < 4 ? '1px solid var(--border2)' : 'none' }}>
                     <span style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: '500' }}>{row.label}</span>
                     <span style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '600' }}>{row.value}</span>
                   </div>
@@ -270,7 +272,7 @@ export default function Profile() {
             {leaves.length === 0 ? (
               <div className="empty"><span className="empty-icon">📭</span><p>No leave history yet</p></div>
             ) : leaves.map((leave, i) => (
-              <div key={leave._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px', borderBottom: i < leaves.length - 1 ? '1px solid var(--border2)' : 'none', gap: '10px', flexWrap: 'wrap', transition: 'background 0.2s' }}
+              <div key={leave._id} className="flex-between-responsive" style={{ alignItems: 'center', padding: '14px 24px', borderBottom: i < leaves.length - 1 ? '1px solid var(--border2)' : 'none', gap: '10px', transition: 'background 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -288,6 +290,7 @@ export default function Profile() {
                     {leave.adminComment && <div style={{ fontSize: '12px', color: 'var(--success)', marginTop: '3px' }}>💬 {leave.adminComment}</div>}
                   </div>
                 </div>
+                <span className="show-mobile" style={{ height: '4px', width: '100%' }}></span>
                 <span style={statusStyle(leave.status)}>{leave.status}</span>
               </div>
             ))}

@@ -167,68 +167,49 @@ export default function Calendar() {
         {/* Calendar */}
         <div className="card" style={{ marginBottom: '20px' }}>
           {/* Nav */}
-          <div style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border2)' }}>
-            <button className="btn btn-ghost" style={{ padding: '6px 16px' }}
+          <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border2)', gap: '8px' }}>
+            <button className="btn btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}
               onClick={() => setCurrent(new Date(year, month - 1, 1))}>← Prev</button>
-            <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '20px', color: 'var(--text)' }}>
+            <h2 className="calendar-nav-title" style={{ margin: 0 }}>
               {MONTHS[month]} {year}
             </h2>
-            <button className="btn btn-ghost" style={{ padding: '6px 16px' }}
+            <button className="btn btn-ghost" style={{ padding: '6px 12px', fontSize: '13px' }}
               onClick={() => setCurrent(new Date(year, month + 1, 1))}>Next →</button>
           </div>
 
           <div style={{ padding: '16px' }}>
             {/* Day names */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px' }}>
+            <div className="calendar-grid-header">
               {DAYS.map(d => (
-                <div key={d} style={{ textAlign: 'center', fontSize: '12px', fontWeight: '600', color: 'var(--text3)', padding: '6px 0', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div key={d} className="calendar-day-label">
                   {d}
                 </div>
               ))}
             </div>
 
             {/* Cells */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(7, 1fr)', 
-              gap: '1px', 
-              background: 'var(--border2)', 
-              border: '1px solid var(--border2)',
-              borderRadius: '12px',
-              overflow: 'hidden'
-            }}>
+            <div className="calendar-grid">
               {cells.map((cell, i) => {
                 const events = getEvents(cell.day, cell.cur);
                 const todayCell = isToday(cell.day, cell.cur);
                 const holidayCell = isHoliday(cell.day, cell.cur);
                 return (
                   <div key={i}
+                    className="calendar-cell"
                     onClick={() => cell.cur && setSelected(selected?.day === cell.day ? null : cell)}
                     style={{
-                      minHeight: '84px',
-                      padding: '10px',
                       background: holidayCell ? 'var(--holiday)' : todayCell ? 'var(--primary-light)' : 'var(--bg2)',
                       opacity: cell.cur ? 1 : 0.4,
                       cursor: cell.cur ? 'pointer' : 'default',
-                      transition: 'all 0.2s ease',
-                      position: 'relative'
                     }}>
-                    <div style={{ 
-                      fontSize: '14px', 
-                      fontWeight: '700', 
-                      color: todayCell ? 'var(--primary)' : (cell.cur ? 'var(--text)' : 'var(--text3)'), 
-                      marginBottom: '6px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}>
+                    <div className="calendar-cell-day" style={{ color: todayCell ? 'var(--primary)' : (cell.cur ? 'var(--text)' : 'var(--text3)') }}>
                       {cell.day}
                       {todayCell && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--primary)' }} />}
                     </div>
+                    
+                    {/* Desktop/Tablet Labels */}
                     {events.slice(0, 2).map((ev, j) => (
-                      <div key={j} style={{
-                        fontSize: '10px', padding: '3px 6px', borderRadius: '4px', marginBottom: '3px',
-                        overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontWeight: '600',
+                      <div key={j} className="calendar-event" style={{
                         background: ev.type === 'holiday' ? 'var(--holiday)' : ev.type === 'approved' ? 'var(--success-light)' : 'var(--warning-light)',
                         color: ev.type === 'holiday' ? 'var(--holiday-text)' : ev.type === 'approved' ? 'var(--success)' : 'var(--warning)',
                         border: `1px solid ${ev.type === 'holiday' ? 'var(--border)' : 'transparent'}`
@@ -236,8 +217,18 @@ export default function Calendar() {
                         {ev.label}
                       </div>
                     ))}
+                    
+                    {/* Mobile Dots */}
+                    <div className="calendar-cell-events show-mobile">
+                      {events.map((ev, j) => (
+                        <div key={j} className="calendar-event-dot" style={{
+                          background: ev.type === 'holiday' ? 'var(--holiday-text)' : ev.type === 'approved' ? 'var(--success)' : 'var(--warning)',
+                        }} />
+                      ))}
+                    </div>
+
                     {events.length > 2 && (
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>+{events.length - 2} more</div>
+                      <div className="hide-mobile" style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: '600', marginTop: '2px' }}>+{events.length - 2} more</div>
                     )}
                     {todayCell && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '2px solid var(--primary)', borderRadius: '0', pointerEvents: 'none', zIndex: 1 }} />}
                   </div>

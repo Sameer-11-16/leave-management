@@ -3,6 +3,8 @@ const router = express.Router();
 const Leave = require('../models/Leave');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { sendLeaveRequestEmail, sendLeaveStatusEmail } = require('../utils/brevoEmail');
+
 
 // Apply for leave
 router.post('/', auth, async (req, res) => {
@@ -40,6 +42,22 @@ router.post('/', auth, async (req, res) => {
       document: document || ''
     });
     await leave.save();
+    
+    // Notify Admin (Async)
+    try {
+      const admin = await User.findOne({ role: 'admin' });
+      if (admin) {
+        await sendLeaveRequestEmail(admin.email, {
+          employeeName: user.name,
+          leaveType,
+          startDate,
+          endDate,
+          reason
+        });
+      }
+    } catch (err) {
+      console.warn('Notification to admin failed:', err.message);
+    }
 
     res.status(201).json(leave);
   } catch (err) {
@@ -103,6 +121,21 @@ router.put('/:id', auth, async (req, res) => {
     leave.status = status;
     leave.adminComment = adminComment || '';
     await leave.save();
+
+    // Notify Employee (Async)
+    try {
+      const emp = await User.findById(leave.employee);
+      if (emp) {
+        await sendLeaveStatusEmail(emp.email, {
+          status,
+          leaveType: leave.leaveType,
+          startDate: leave.startDate,
+          adminComment
+        });
+      }
+    } catch (err) {
+      console.warn('Notification to employee failed:', err.message);
+    }
 
     res.json(leave);
   } catch (err) {

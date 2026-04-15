@@ -62,22 +62,20 @@ export default function Navbar() {
         </div>
       </div>
 
-      {open && (
-        <div className="mobile-menu">
-          {links.map(l => (
-            <Link key={l.to} to={l.to} className="mobile-nav-link" onClick={() => setOpen(false)}>
-              {l.label}
-            </Link>
-          ))}
-          <Link to="/profile" className="mobile-nav-link" onClick={() => setOpen(false)}>👤 My Profile</Link>
-          <button onClick={toggle} className="mobile-nav-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '14px', color: 'var(--text2)', padding: '10px 14px' }}>
-            {dark ? '🌙 Dark Mode' : '☀️ Light Mode'}
-          </button>
-          <button onClick={() => { handleLogout(); setOpen(false); }} className="btn btn-danger btn-full" style={{ marginTop: '8px' }}>
-            Logout
-          </button>
-        </div>
-      )}
+      <div className={`mobile-menu ${open ? 'open' : ''}`}>
+        {links.map(l => (
+          <Link key={l.to} to={l.to} className="mobile-nav-link" onClick={() => setOpen(false)}>
+            {l.label}
+          </Link>
+        ))}
+        <Link to="/profile" className="mobile-nav-link" onClick={() => setOpen(false)}>👤 My Profile</Link>
+        <button onClick={toggle} className="mobile-nav-link" style={{ background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', fontSize: '14px', color: 'var(--text2)', padding: '10px 14px' }}>
+          {dark ? '🌙 Dark Mode' : '☀️ Light Mode'}
+        </button>
+        <button onClick={() => { handleLogout(); setOpen(false); }} className="btn btn-danger btn-full" style={{ marginTop: '8px' }}>
+          Logout
+        </button>
+      </div>
     </nav>
   );
 }

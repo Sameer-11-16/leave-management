@@ -10,6 +10,8 @@ import MyLeaves from './pages/MyLeaves';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
 import Calendar from './pages/Calendar';
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOTP from './pages/VerifyOTP';
 import Navbar from './components/Navbar';
 
 const PrivateRoute = ({ children }) => {
@@ -30,6 +32,8 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-registration" element={<VerifyOTP />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/apply" element={<PrivateRoute><ApplyLeave /></PrivateRoute>} />
         <Route path="/my-leaves" element={<PrivateRoute><MyLeaves /></PrivateRoute>} />

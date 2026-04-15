@@ -14,8 +14,8 @@ function InsufficientModal({ show, leaveType, remaining, needed, onClose }) {
   if (!show) return null;
   const info = LEAVE_INFO[leaveType] || {};
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: 'var(--bg2)', borderRadius: '20px', padding: '32px', maxWidth: '400px', width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', animation: 'scaleIn 0.2s ease', border: '1px solid var(--border)' }}>
+    <div className="show-mobile" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div className="card anim-scaleIn" style={{ maxWidth: '400px', width: '100%', padding: '32px' }}>
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <div style={{ fontSize: '52px', marginBottom: '12px' }}>🚫</div>
           <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '22px', color: 'var(--text)', marginBottom: '8px' }}>
@@ -26,11 +26,11 @@ function InsufficientModal({ show, leaveType, remaining, needed, onClose }) {
           </p>
         </div>
         <div style={{ background: 'var(--danger-light)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div className="flex-between-responsive" style={{ marginBottom: '8px' }}>
             <span style={{ fontSize: '13px', color: 'var(--text2)' }}>Days requested</span>
             <span style={{ fontWeight: '700', color: 'var(--danger)' }}>{needed} days</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div className="flex-between-responsive">
             <span style={{ fontSize: '13px', color: 'var(--text2)' }}>Days available</span>
             <span style={{ fontWeight: '700', color: 'var(--danger)' }}>{remaining} days</span>
           </div>
@@ -38,7 +38,7 @@ function InsufficientModal({ show, leaveType, remaining, needed, onClose }) {
         <p style={{ fontSize: '13px', color: 'var(--text3)', textAlign: 'center', marginBottom: '20px' }}>
           💡 Try reducing the number of days or use a different leave type.
         </p>
-        <button onClick={onClose} className="btn btn-primary btn-full" style={{ padding: '12px' }}>
+        <button onClick={onClose} className="btn btn-primary btn-full btn-lg">
           Got it, go back
         </button>
       </div>
