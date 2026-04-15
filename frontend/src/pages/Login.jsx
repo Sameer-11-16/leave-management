@@ -61,7 +61,7 @@ export default function Login() {
             <p className="auth-sub">Sign in to your account to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="auth-form-row-responsive anim-fadeInUp">
+          <form onSubmit={handleSubmit} className="auth-form-vertical anim-fadeInUp">
             <div className="form-group">
               <label className="form-label" htmlFor="email">Email address</label>
               <div className="input-icon-wrapper">
@@ -122,7 +122,7 @@ export default function Login() {
               )}
             </button>
           </form>
-          <p className="auth-footer">Don't have an account? <Link to="/register" style={{ fontWeight: '600', color: 'var(--primary)' }}>Create one for free</Link></p>
+          <p className="auth-footer">Don't have an account? <Link to="/register" style={{ fontWeight: '600', color: 'var(--primary)' }}>Create a new account</Link></p>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -26,9 +26,13 @@ const AdminRoute = ({ children }) => {
 
 function AppRoutes() {
   const { token } = useAuth();
+  const location = useLocation();
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-registration'];
+  const showNavbar = token && !authRoutes.includes(location.pathname);
+
   return (
     <>
-      {token && <Navbar />}
+      {showNavbar && <Navbar />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -57,11 +57,11 @@ export default function ForgotPassword() {
             <form onSubmit={handleSendOtp}>
               <div className="form-group">
                 <label className="form-label">Email Address</label>
-                <input className="form-input" type="email" placeholder="name@company.com" 
+                <input className="form-input" type="email" placeholder="name@gmail.com" 
                   value={email} onChange={e => setEmail(e.target.value)} required />
               </div>
               <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? 'Sending OTP...' : 'Send Reset OTP'}
               </button>
             </form>
           ) : (

@@ -47,6 +47,29 @@
   --card-bg: rgba(15, 23, 42, 0.6);
 }
 
+/* Force light mode variables on all auth pages with a sophisticated Ash/Slate palette */
+[data-theme="dark"] .auth-page,
+.auth-page {
+  --bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  --bg2: rgba(255, 255, 255, 0.9);
+  --bg3: rgba(241, 245, 249, 0.45);
+  --border: rgba(148, 163, 184, 0.2);
+  --border2: rgba(148, 163, 184, 0.1);
+  --text: #1e293b;
+  --text2: #475569;
+  --text3: #64748b;
+  --primary-light: #f1f5f9;
+  --success-light: #f0fdf4;
+  --warning-light: #fffbeb;
+  --danger-light: #fef2f2;
+  --holiday: #f1f5f9;
+  --holiday-text: #475569;
+  --shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 25px 50px rgba(15, 23, 42, 0.1);
+  --card-bg: #ffffff;
+}
+
 /* ── Reset ── */
 * {
   margin: 0;
@@ -1301,6 +1324,12 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+
+.auth-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 @media (max-width: 640px) {
