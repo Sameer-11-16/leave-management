@@ -1,7 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
+
+// Debug: Check if .env is loaded
+if (!process.env.JWT_SECRET) {
+  console.warn('⚠️ WARNING: JWT_SECRET is not defined in process.env. Check your .env file location!');
+} else {
+  console.log('✅ Environment variables loaded successfully.');
+}
 
 const app = express();
 
