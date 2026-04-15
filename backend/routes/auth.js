@@ -75,17 +75,49 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`[LMS DEBUG] Login attempt for: ${email}`);
+
+    if (!process.env.JWT_SECRET) {
+      console.error('CRITICAL: JWT_SECRET is missing from process.env');
+      return res.status(500).json({ msg: 'Server configuration error (JWT)' });
+    }
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!user) {
+      console.log(`[LMS DEBUG] User not found: ${email}`);
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!isMatch) {
+      console.log(`[LMS DEBUG] Password mismatch for: ${email}`);
+      return res.status(400).json({ msg: 'Invalid credentials' });
+    }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user._id, name: user.name, email, role: user.role, department: user.department, leaveBalance: user.leaveBalance } });
+    try {
+      const token = jwt.sign(
+        { id: user._id, role: user.role }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: '7d' }
+      );
+      
+      res.json({ 
+        token, 
+        user: { 
+          id: user._id, 
+          name: user.name, 
+          email: user.email, 
+          role: user.role, 
+          department: user.department, 
+          leaveBalance: user.leaveBalance 
+        } 
+      });
+    } catch (jwtErr) {
+      console.error('JWT Signing Error:', jwtErr);
+      return res.status(500).json({ msg: 'Error generating security token' });
+    }
   } catch (err) {
-    console.error('Login Error:', err);
+    console.error('SERVER ERROR in Login:', err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
