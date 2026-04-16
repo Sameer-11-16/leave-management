@@ -223,8 +223,8 @@ export default function AdminPanel() {
                     <div className="balance-row" style={{ marginTop: '8px' }}>
                       {Object.entries(emp.leaveBalance || {}).filter(([type]) => ['casual','medical','special'].includes(type)).map(([type, val]) => (
                         <div key={type} className={`balance-chip badge badge-${type}`} style={{ padding: '6px 12px' }}>
-                          <span style={{ opacity: 0.8, fontSize: '10px', textTransform: 'uppercase', marginRight: '6px' }}>{type}:</span>
-                          <strong>{val}</strong>
+                          <span style={{ opacity: 0.8, fontSize: '10px', textTransform: 'uppercase', marginRight: type === 'special' && val > 500 ? '0' : '6px' }}>{type}</span>
+                          {!(type === 'special' && val > 500) && <strong>: {val}</strong>}
                         </div>
                       ))}
                     </div>

@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Holiday = require('../models/Holiday');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
+const { sendHolidayEmail } = require('../utils/brevoEmail');
 
 // Get all holidays
 router.get('/', auth, async (req, res) => {
@@ -19,8 +21,21 @@ router.post('/', auth, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
     const { name, date } = req.body;
     if (!name || !date) return res.status(400).json({ msg: 'Name and date required' });
+    
     const holiday = new Holiday({ name, date, createdBy: req.user.id });
     await holiday.save();
+
+    // Notify all employees (Async)
+    try {
+      const users = await User.find({ role: 'employee' }, 'email');
+      const emails = users.map(u => u.email).filter(e => !!e);
+      if (emails.length > 0) {
+        await sendHolidayEmail(emails, { name, date });
+      }
+    } catch (err) {
+      console.warn('Holiday broadcast failed:', err.message);
+    }
+
     res.status(201).json(holiday);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

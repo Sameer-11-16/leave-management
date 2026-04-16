@@ -141,7 +141,7 @@ export default function Calendar() {
         {showForm && user?.role === 'admin' && (
           <div className="card anim-fadeInUp" style={{ marginBottom: '20px' }}>
             <div className="card-body">
-              <p style={{ fontWeight: '600', color: 'var(--text)', marginBottom: '16px', fontSize: '15px' }}>Add Public Holiday</p>
+              <p style={{ fontWeight: '600', color: 'var(--text)', marginBottom: '16px', fontSize: '15px' }}>Add Company Holiday</p>
               <form onSubmit={addHoliday}>
                 <div className="form-row">
                   <div className="form-group">
@@ -283,7 +283,7 @@ export default function Calendar() {
         {holidays.length > 0 && (
           <div className="card">
             <div className="card-header">
-              <span style={{ fontWeight: '600', color: 'var(--text)', fontSize: '15px' }}>Public Holidays {year}</span>
+              <span style={{ fontWeight: '600', color: 'var(--text)', fontSize: '15px' }}>Company Holidays {year}</span>
               <span style={{ fontSize: '12px', color: 'var(--text3)', background: 'var(--bg3)', padding: '3px 10px', borderRadius: '99px' }}>
                 {holidays.filter(h => new Date(h.date).getFullYear() === year).length} this year
               </span>
@@ -301,7 +301,7 @@ export default function Calendar() {
                   return (
                     <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text3)' }}>
                       <div style={{ fontSize: '24px', marginBottom: '8px' }}>🌤️</div>
-                      <p style={{ fontSize: '13px' }}>No public holidays in {MONTHS[month]}</p>
+                      <p style={{ fontSize: '13px' }}>No company holidays in {MONTHS[month]}</p>
                     </div>
                   );
                 }

@@ -94,6 +94,39 @@ const sendLeaveStatusEmail = async (employeeEmail, statusData) => {
     return sendBrevoRequest(emailData);
 };
 
+const sendHolidayEmail = async (emails, holidayData) => {
+    const senderEmail = process.env.BREVO_SENDER_EMAIL || "no-reply@leavemanagement.com";
+    const { name, date } = holidayData;
+
+    const emailData = {
+        subject: `Company Holiday Announcement: ${name}`,
+        htmlContent: `
+            <html>
+                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; background-color: #ffffff;">
+                        <div style="text-align: center; padding-bottom: 20px; border-bottom: 2px solid #f59e0b;">
+                            <h2 style="color: #d97706; margin: 0;">🏖️ Company Holiday Announcement</h2>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p>Great news! A new <strong>Company Holiday</strong> has been added to the calendar:</p>
+                            <div style="padding: 15px; background-color: #fef3c7; border-radius: 8px; margin: 20px 0; text-align: center;">
+                                <h3 style="margin: 0; color: #92400e;">${name}</h3>
+                                <p style="margin: 5px 0 0 0; font-weight: 600;">Date: ${new Date(date).toLocaleDateString()}</p>
+                            </div>
+                            <p>The system has been updated, and this date will now be reflected in your company leave calendar.</p>
+                        </div>
+                        <p style="font-size: 12px; color: #777; text-align: center;">Leave Management System &copy; 2026</p>
+                    </div>
+                </body>
+            </html>
+        `,
+        sender: { name: "LMS Company Holidays", email: senderEmail },
+        to: emails.map(email => ({ email }))
+    };
+
+    return sendBrevoRequest(emailData);
+};
+
 const sendBrevoRequest = async (emailData) => {
     const apiKey = process.env.BREVO_API_KEY;
     try {
@@ -116,4 +149,4 @@ const sendBrevoRequest = async (emailData) => {
     }
 };
 
-module.exports = { sendOTPEmail, sendLeaveRequestEmail, sendLeaveStatusEmail };
+module.exports = { sendOTPEmail, sendLeaveRequestEmail, sendLeaveStatusEmail, sendHolidayEmail };
