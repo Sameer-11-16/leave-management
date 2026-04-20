@@ -147,11 +147,15 @@ export default function AdminPanel() {
                       <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--bg3)', borderRadius: '12px', border: '1px solid var(--border)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '18px' }}>📄</span>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <a href={leave.document.startsWith('http') ? leave.document : '#'} target="_blank" rel="noreferrer" 
-                             style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
-                            {leave.document.startsWith('http') ? 'View Supporting Document' : 'Attachment Reference'}
+                          <a 
+                            href={leave.document.startsWith('http') ? leave.document.replace('/upload/', '/upload/fl_attachment/') : '#'} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            download
+                            style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: '700', textDecoration: 'none' }}>
+                            {leave.document.startsWith('http') ? 'View / Download Proof' : 'Attachment Reference'}
                           </a>
-                          {!leave.document.startsWith('http') && <span style={{ fontSize: '11px', color: 'var(--text3)' }}>Ref: {leave.document}</span>}
+                          <span style={{ fontSize: '11px', color: 'var(--text3)' }}>Click to open in a secure tab</span>
                         </div>
                       </div>
                     )}

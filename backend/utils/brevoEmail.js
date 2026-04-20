@@ -1,6 +1,6 @@
+const axios = require('axios');
 const sendOTPEmail = async (email, otp) => {
-    const apiKey = process.env.BREVO_API_KEY;
-    const senderEmail = process.env.BREVO_SENDER_EMAIL || "no-reply@leavemanagement.com";
+    const senderEmail = process.env.BREVO_SENDER_EMAIL || "smartleavemanager11@gmail.com";
 
     const emailData = {
         subject: "Verification Code - Leave Management System",
@@ -129,23 +129,27 @@ const sendHolidayEmail = async (emails, holidayData) => {
 
 const sendBrevoRequest = async (emailData) => {
     const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) {
+        console.error('[CRITICAL] BREVO_API_KEY is missing in .env');
+        return;
+    }
+
     try {
-        if (!apiKey) throw new Error('BREVO_API_KEY missing');
-        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
+        const response = await axios.post('https://api.brevo.com/v3/smtp/email', emailData, {
             headers: {
                 'accept': 'application/json',
                 'api-key': apiKey,
                 'content-type': 'application/json'
-            },
-            body: JSON.stringify(emailData)
+            }
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Brevo Error');
-        return data;
+        console.log(`[Email] Success: ${emailData.subject} sent to ${emailData.to.map(t => t.email).join(', ')}`);
+        return response.data;
     } catch (error) {
-        console.error('Brevo Error:', error.message);
-        // We don't throw so the main flow doesn't crash if email fails
+        if (error.response) {
+            console.error('[Email] Brevo API Error Detail:', JSON.stringify(error.response.data, null, 2));
+        } else {
+            console.error('[Email] Dispatch Failure:', error.message);
+        }
     }
 };
 

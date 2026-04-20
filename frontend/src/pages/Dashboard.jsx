@@ -367,9 +367,13 @@ export default function Dashboard() {
                         {new Date(leave.startDate).toLocaleDateString()} → {new Date(leave.endDate).toLocaleDateString()} · {leave.days} day{leave.days !== 1 ? 's' : ''}
                       </div>
                       {leave.leaveType === 'special' && leave.document && (
-                        <a href={leave.document.startsWith('http') ? leave.document : '#'} target="_blank" rel="noreferrer"
-                          style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '3px', display: 'inline-block' }}>
-                          📎 View Document
+                        <a 
+                          href={leave.document.startsWith('http') ? leave.document.replace('/upload/', '/upload/fl_attachment/') : '#'} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          download
+                          style={{ fontSize: '11px', color: 'var(--primary)', marginTop: '3px', display: 'inline-block', fontWeight: '600' }}>
+                          💾 Download / View Proof
                         </a>
                       )}
                     </div>

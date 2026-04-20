@@ -18,7 +18,8 @@ export default function Login() {
       const { data } = await API.post('/auth/login', form);
       login(data);
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      if (data.user.role === 'admin') navigate('/admin');
+      else navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.msg || 'Login failed');
     } finally {

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Leave = require('../models/Leave');
 const User = require('../models/User');
+const Holiday = require('../models/Holiday');
 const auth = require('../middleware/auth');
 const { sendLeaveRequestEmail, sendLeaveStatusEmail } = require('../utils/brevoEmail');
 
@@ -12,9 +13,31 @@ router.post('/', auth, async (req, res) => {
     const { leaveType, startDate, endDate, reason, document } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
-    if (days <= 0) return res.status(400).json({ msg: 'Invalid dates' });
+    // Fetch holidays to exclude them from the count
+    const holidays = await Holiday.find({}, 'date');
+    const holidayDates = new Set(holidays.map(h => h.date.toISOString().split('T')[0]));
+
+    let days = 0;
+    const [sY, sM, sD] = startDate.split('-').map(Number);
+    const [eY, eM, eD] = endDate.split('-').map(Number);
+    
+    let current = new Date(Date.UTC(sY, sM - 1, sD));
+    const final = new Date(Date.UTC(eY, eM - 1, eD));
+
+    while (current <= final) {
+      const dateStr = current.toISOString().split('T')[0];
+      const dayOfWeek = current.getUTCDay();
+      const isSunday = dayOfWeek === 0; // Only skip Sundays
+      const isHoliday = holidayDates.has(dateStr);
+
+      if (!isSunday && !isHoliday) {
+        days++;
+      }
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+
+    if (days <= 0) return res.status(400).json({ msg: 'Leave requests on Sundays or public holidays are not allowed' });
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ msg: 'User not found' });

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import API from '../api';
 import Skeleton from '../components/Skeleton';
@@ -49,21 +50,88 @@ function InsufficientModal({ show, leaveType, remaining, needed, onClose }) {
 export default function ApplyLeave() {
   const [form, setForm] = useState({ leaveType: 'casual', startDate: '', endDate: '', reason: '', document: '' });
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [balance, setBalance] = useState(null);
+  const [holidays, setHolidays] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/users/me')
-      .then(({ data }) => setBalance(data.leaveBalance))
-      .catch(() => {})
-      .finally(() => setPageLoading(false));
+    const fetchData = async () => {
+      try {
+        const [userRes, holidayRes] = await Promise.all([
+          API.get('/users/me'),
+          API.get('/holidays')
+        ]);
+        setBalance(userRes.data.leaveBalance);
+        setHolidays(holidayRes.data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  const days = form.startDate && form.endDate
-    ? Math.max(Math.ceil((new Date(form.endDate) - new Date(form.startDate)) / (1000 * 60 * 60 * 24)) + 1, 0)
-    : 0;
+  const calculateDays = () => {
+    if (!form.startDate || !form.endDate) return 0;
+    
+    // Parse dates manually to avoid timezone shifts
+    const [sY, sM, sD] = form.startDate.split('-').map(Number);
+    const [eY, eM, eD] = form.endDate.split('-').map(Number);
+    
+    let current = new Date(Date.UTC(sY, sM - 1, sD));
+    const final = new Date(Date.UTC(eY, eM - 1, eD));
+    
+    const holidayDates = new Set(holidays.map(h => new Date(h.date).toISOString().split('T')[0]));
+    
+    let count = 0;
+    while (current <= final) {
+      const dateStr = current.toISOString().split('T')[0];
+      const dayOfWeek = current.getUTCDay();
+      const isSunday = dayOfWeek === 0; // Only Sunday is skipped
+      const isHoliday = holidayDates.has(dateStr);
+      
+      if (!isSunday && !isHoliday) {
+        count++;
+      }
+      current.setUTCDate(current.getUTCDate() + 1);
+    }
+    return count;
+  };
+
+  const days = calculateDays();
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return toast.error('File size must be less than 5MB');
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', import.meta.env.VITE_UPLOAD_PRESET);
+
+    try {
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/auto/upload`,
+        formData
+      );
+      setForm({ ...form, document: res.data.secure_url });
+      toast.success('Document uploaded successfully!');
+    } catch (err) {
+      console.error('Upload Error:', err);
+      toast.error('Failed to upload document');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const info = LEAVE_INFO[form.leaveType];
   const remaining = form.leaveType === 'special' ? null : (balance ? balance[form.leaveType] : null);
@@ -103,7 +171,9 @@ export default function ApplyLeave() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (days <= 0) return toast.error('End date must be after start date');
+    if (!form.startDate || !form.endDate) return toast.error('Please select both start and end dates');
+    if (new Date(form.endDate) < new Date(form.startDate)) return toast.error('End date cannot be before start date');
+    if (days <= 0) return toast.error('Leave requests on Sundays or public holidays are not required and not allowed');
 
     // Show popup if insufficient balance
     if (!isEnough && form.leaveType !== 'special') {
@@ -241,16 +311,50 @@ export default function ApplyLeave() {
             {form.leaveType === 'special' && (
               <div className="form-group">
                 <label className="form-label">Document Proof <span style={{ color: '#ef4444' }}>*</span></label>
-                <div style={{ padding: '20px', border: '2px dashed var(--border)', borderRadius: '12px', background: 'var(--bg3)', textAlign: 'center', marginBottom: '8px' }}>
-                  <div style={{ fontSize: '32px', marginBottom: '8px' }}>📎</div>
-                  <p style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '10px' }}>
-                    Attach document URL or description
-                  </p>
-                  <input className="form-input"
-                    style={{ textAlign: 'center', background: 'var(--bg2)' }}
-                    placeholder="e.g. https://drive.google.com/... or Medical certificate"
-                    value={form.document}
-                    onChange={e => setForm({ ...form, document: e.target.value })} />
+                <div style={{ 
+                  padding: '24px', 
+                  border: '2px dashed var(--border)', 
+                  borderRadius: '16px', 
+                  background: 'var(--bg3)', 
+                  textAlign: 'center', 
+                  marginBottom: '8px',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  position: 'relative'
+                }}
+                onClick={() => !uploading && document.getElementById('fileInput').click()}
+                >
+                  {uploading ? (
+                    <div>
+                      <div className="spinner" style={{ margin: '0 auto 12px' }}></div>
+                      <p style={{ fontSize: '13px', color: 'var(--text2)' }}>Uploading document...</p>
+                    </div>
+                  ) : form.document ? (
+                    <div>
+                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
+                      <p style={{ fontSize: '14px', color: 'var(--success)', fontWeight: '600' }}>File Ready</p>
+                      <p style={{ fontSize: '11px', color: 'var(--text3)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px', margin: '4px auto' }}>
+                        {form.document.split('/').pop()}
+                      </p>
+                      <button type="button" 
+                        onClick={(e) => { e.stopPropagation(); setForm({...form, document: ''}) }}
+                        style={{ fontSize: '11px', color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
+                      >Remove & Replace</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: '32px', marginBottom: '8px' }}>📤</div>
+                      <p style={{ fontSize: '14px', color: 'var(--text)', fontWeight: '600' }}>Click to Upload</p>
+                      <p style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>PDF, JPG, or PNG (Max 5MB)</p>
+                    </div>
+                  )}
+                  <input 
+                    id="fileInput"
+                    type="file" 
+                    hidden 
+                    accept="image/*,application/pdf"
+                    onChange={handleFileUpload} 
+                  />
                 </div>
                 <p style={{ fontSize: '11px', color: 'var(--text3)' }}>
                   ⭐ Special leave requires supporting document proof. Admin will review before approval.
